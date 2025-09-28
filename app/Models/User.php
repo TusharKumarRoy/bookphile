@@ -11,13 +11,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'name',
         'first_name',
         'last_name',
         'email',
@@ -27,21 +21,12 @@ class User extends Authenticatable
         'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    
     protected function casts(): array
     {
         return [
@@ -50,27 +35,91 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Check if user is admin or master admin
-     */
+    
     public function isAdmin(): bool
     {
         return in_array($this->role, ['admin', 'master_admin']);
     }
 
-    /**
-     * Check if user is master admin
-     */
+   
     public function isMasterAdmin(): bool
     {
         return $this->role === 'master_admin';
     }
 
-    /**
-     * Get full name attribute
-     */
+    
     public function getFullNameAttribute(): string
     {
         return $this->first_name . ' ' . $this->last_name;
     }
+
+
+public function readingStatuses()
+{
+    return $this->hasMany(ReadingStatus::class);
+}
+
+public function wantToReadBooks()
+{
+    return $this->belongsToMany(Book::class, 'reading_statuses')
+                ->wherePivot('status', ReadingStatus::STATUS_WANT_TO_READ)
+                ->withPivot(['status', 'started_reading', 'finished_reading', 'current_page', 'notes', 'is_favorite'])
+                ->withTimestamps();
+}
+
+public function currentlyReadingBooks()
+{
+    return $this->belongsToMany(Book::class, 'reading_statuses')
+                ->wherePivot('status', ReadingStatus::STATUS_CURRENTLY_READING)
+                ->withPivot(['status', 'started_reading', 'finished_reading', 'current_page', 'notes', 'is_favorite'])
+                ->withTimestamps();
+}
+
+public function finishedReadingBooks()
+{
+    return $this->belongsToMany(Book::class, 'reading_statuses')
+                ->wherePivot('status', ReadingStatus::STATUS_FINISHED_READING)
+                ->withPivot(['status', 'started_reading', 'finished_reading', 'current_page', 'notes', 'is_favorite'])
+                ->withTimestamps();
+}
+
+public function favoriteBooks()
+{
+    return $this->belongsToMany(Book::class, 'reading_statuses')
+                ->wherePivot('is_favorite', true)
+                ->withPivot(['status', 'started_reading', 'finished_reading', 'current_page', 'notes', 'is_favorite'])
+                ->withTimestamps();
+}
+
+
+public function getReadingStatusFor(Book $book): ?ReadingStatus
+{
+    return $this->readingStatuses()->where('book_id', $book->id)->first();
+}
+
+
+public function hasRead(Book $book): bool
+{
+    return $this->readingStatuses()
+                ->where('book_id', $book->id)
+                ->where('status', ReadingStatus::STATUS_FINISHED_READING)
+                ->exists();
+}
+
+
+public function getReadingStats(): array
+{
+    $statuses = $this->readingStatuses()
+                     ->selectRaw('status, COUNT(*) as count')
+                     ->groupBy('status')
+                     ->pluck('count', 'status')
+                     ->toArray();
+
+    return [
+        'want_to_read' => $statuses[ReadingStatus::STATUS_WANT_TO_READ] ?? 0,
+        'currently_reading' => $statuses[ReadingStatus::STATUS_CURRENTLY_READING] ?? 0,
+        'finished_reading' => $statuses[ReadingStatus::STATUS_FINISHED_READING] ?? 0,
+        'total_books' => array_sum($statuses),
+    ];
+}
 }
