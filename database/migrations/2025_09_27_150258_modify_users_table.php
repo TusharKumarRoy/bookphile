@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('role', ['user', 'admin', 'master_admin'])
                   ->default('user')
                   ->after('profile_image');
+            
         });
 
     }

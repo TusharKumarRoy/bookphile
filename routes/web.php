@@ -27,4 +27,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('books', App\Http\Controllers\Admin\BookController::class);
 });
 
+
+Route::get('/books', [App\Http\Controllers\BookController::class, 'index'])->name('books.index');
+Route::get('/books/{book}', [App\Http\Controllers\BookController::class, 'show'])->name('books.show');
+
+// Update the home route to show books
+Route::get('/', [App\Http\Controllers\BookController::class, 'index'])->name('home');
+
 require __DIR__.'/auth.php';
