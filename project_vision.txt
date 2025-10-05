@@ -1,0 +1,146 @@
+Goodreads Clone - Complete Project
+Overview
+Project Vision
+A comprehensive social reading platform where users can discover books, track their reading
+progress, share reviews, and connect with fellow readers through friendships and group
+discussions.
+Core Features
+1. User Management & Authentication
+• User Registration/Login: Standard authentication system
+• User Roles:
+o Regular Users (basic reading/social features)
+o Admins (book/content management)
+o Master Admin (full system control)
+• User Profiles: Display reading activity, reviews, friends list, group memberships
+2. Book Management System
+• Book Catalog: Comprehensive database with:
+o Title, Author(s), ISBN, Genre(s)
+o Description, publication date, page count
+o Cover images
+o Book details and metadata
+• Reading Status Tracking: Users can mark books as:
+o "Want to Read"
+o "Currently Reading"
+o "Finished Reading"
+• Book Requests:
+o Users can request missing books to be added
+o Admins approve/reject requests
+o Status tracking and notifications for requesters
+3. Rating & Review System
+• Dual System:
+o Separate 1-5 star ratings
+o Written text reviews
+• Review Types:
+o Book-specific reviews (displayed on book pages)
+o Profile posts (social media style updates)
+• Privacy Settings:
+o Public (visible to everyone)
+o Friends Only
+o Group Only (visible to specific groups)
+o Private (only user can see)
+• Content Management: Users can edit/delete their own reviews and ratings
+4. Social Features
+• Friend System:
+o Send/receive friend requests
+o Accept/decline requests
+o Remove friends
+o Friend request notifications
+• Social Interactions:
+o Comment on reviews and posts
+o React to reviews (like/love/etc.)
+o Share thoughts and reading updates
+• Activity Feed:
+o See friends' reading activity
+o View friends' new reviews
+o Track reading progress updates
+o Social engagement notifications
+5. Group System
+• Group Creation: Users can create reading groups/book clubs
+• Group Types:
+o Private groups (invite-only)
+o Public groups (anyone can join)
+• Group Features:
+o Focused discussions about specific books
+o General reading conversations
+o Group reading challenges
+o Shared book recommendations
+• Group Management:
+o Creator acts as group admin
+o Manage member permissions
+o Moderate content and discussions
+o Control group settings and privacy
+6. Admin Features
+• Content Management:
+o Add, edit, delete books from catalog
+o Manage author information
+o Control book metadata and details
+• User Management:
+o Monitor user activity
+o Handle user reports and complaints
+o Manage user permissions and roles
+• Request Processing:
+o Review and approve/reject book addition requests
+o Communicate with users about request status
+• Permission Levels:
+o Hierarchical admin system
+o Master admin has oversight of all admins
+o Role-based access control
+Technology Stack
+• Backend Framework: Laravel (PHP)
+• Database: MySQL
+• Frontend: Blade templates with HTML/CSS/JavaScript
+• Authentication: Laravel's built-in authentication system
+• File Storage: Laravel filesystem (for book covers, profile images)
+Database Structure (Key Entities)
+Core Entities:
+• Users (profiles, authentication, roles)
+• Books (catalog, metadata, details)
+• Authors (author information, biographies)
+• Genres (book categorization)
+Relationship Entities:
+• Reviews (user reviews of books)
+• Ratings (separate star ratings)
+• Reading Status (user-book relationship tracking)
+• Friendships (user-to-user relationships)
+• Groups (reading groups/book clubs)
+• Group Members (user-group relationships)
+• Book Requests (user requests for missing books)
+• Admin Permissions (role-based access control)
+Social Entities:
+• Comments (on reviews and posts)
+• Reactions (likes, loves on content)
+• Activity Feed (social updates and notifications)
+• Group Discussions (group-specific conversations)
+Key Relationships
+• Many-to-Many: Users ↔ Books (reading status), Users ↔ Friends, Users ↔ Groups,
+Books ↔ Authors, Books ↔ Genres
+• One-to-Many: Users → Reviews, Users → Ratings, Books → Reviews, Groups →
+Discussions
+• Polymorphic: Comments (can be on reviews, posts, discussions)
+Future Development Opportunities
+• Advanced Features:
+o Sophisticated recommendation algorithms
+o Reading challenges and yearly goals
+o Enhanced social media-style posting
+o Reading statistics and analytics
+• Technical Expansion:
+o Mobile app development (iOS/Android)
+o API for third-party integrations
+o Advanced search and filtering
+o Real-time notifications
+• Social Enhancement:
+o Book recommendation engine based on friend activity
+o Reading streaks and achievements
+o Author follows and updates
+o Book clubs with scheduled discussions
+Core User Flows
+1. New User: Register → Set up profile → Add books to shelves → Find friends → Join
+groups
+2. Reading Flow: Discover book → Add to "Want to Read" → Mark as "Currently
+Reading" → Finish and rate/review
+3. Social Flow: Find friends → Follow their activity → Comment on reviews → Join
+discussions
+4. Group Flow: Join/create groups → Participate in discussions → Share recommendations
+→ Organize reading events
+This is your comprehensive social reading platform that balances individual reading tracking
+with robust community engagement features!

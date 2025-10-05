@@ -25,6 +25,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('authors', App\Http\Controllers\Admin\AuthorController::class);
     Route::resource('genres', App\Http\Controllers\Admin\GenreController::class);
     Route::resource('books', App\Http\Controllers\Admin\BookController::class);
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class)->only(['index', 'show', 'destroy']);
 });
 
 

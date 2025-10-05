@@ -35,9 +35,9 @@ class BookController extends Controller
             'isbn' => 'nullable|string|max:17|unique:books',
             'description' => 'nullable|string',
             'page_count' => 'nullable|integer|min:1',
-            'published_date' => 'nullable|date',
+            'publication_date' => 'nullable|date',
             'language' => 'nullable|string|max:10',
-            'cover_image_url' => 'nullable|url',
+            'cover_image' => 'nullable|url',
             'authors' => 'required|array|min:1',
             'authors.*' => 'exists:authors,id',
             'genres' => 'required|array|min:1',
@@ -49,9 +49,9 @@ class BookController extends Controller
             'isbn' => $validated['isbn'] ?? null,
             'description' => $validated['description'] ?? null,
             'page_count' => $validated['page_count'] ?? null,
-            'published_date' => $validated['published_date'] ?? null,
+            'publication_date' => $validated['publication_date'] ?? null,
             'language' => $validated['language'] ?? 'en',
-            'cover_image_url' => $validated['cover_image_url'] ?? null,
+            'cover_image' => $validated['cover_image'] ?? null,
         ]);
 
         // Attach authors and genres
@@ -85,9 +85,9 @@ class BookController extends Controller
             'isbn' => ['nullable', 'string', 'max:17', Rule::unique('books')->ignore($book)],
             'description' => 'nullable|string',
             'page_count' => 'nullable|integer|min:1',
-            'published_date' => 'nullable|date',
+            'publication_date' => 'nullable|date',
             'language' => 'nullable|string|max:10',
-            'cover_image_url' => 'nullable|url',
+            'cover_image' => 'nullable|url',
             'authors' => 'required|array|min:1',
             'authors.*' => 'exists:authors,id',
             'genres' => 'required|array|min:1',
@@ -99,9 +99,9 @@ class BookController extends Controller
             'isbn' => $validated['isbn'] ?? null,
             'description' => $validated['description'] ?? null,
             'page_count' => $validated['page_count'] ?? null,
-            'published_date' => $validated['published_date'] ?? null,
+            'publication_date' => $validated['publication_date'] ?? null,
             'language' => $validated['language'] ?? 'en',
-            'cover_image_url' => $validated['cover_image_url'] ?? null,
+            'cover_image' => $validated['cover_image'] ?? null,
         ]);
 
         // Sync authors and genres

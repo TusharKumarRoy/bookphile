@@ -48,6 +48,40 @@ class User extends Authenticatable
     }
 
     
+    public function isRegularAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    
+    public function isUser(): bool
+    {
+        return $this->role === 'user' || is_null($this->role);
+    }
+
+    
+    public function canManageAdmins(): bool
+    {
+        return $this->isMasterAdmin();
+    }
+
+    
+    public function canManageUser(User $user): bool
+    {
+        // Master admin can manage anyone except themselves
+        if ($this->isMasterAdmin()) {
+            return $this->id !== $user->id;
+        }
+
+        // Regular admin can only manage regular users (not other admins)
+        if ($this->isRegularAdmin()) {
+            return $user->isUser();
+        }
+
+        return false;
+    }
+
+    
     public function getFullNameAttribute(): string
     {
         return $this->first_name . ' ' . $this->last_name;
