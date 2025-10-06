@@ -6,6 +6,11 @@
 <div class="mb-8">
     <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
+        @if(auth()->user()->isMasterAdmin())
+            <a href="{{ route('admin.users.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Create Admin User
+            </a>
+        @endif
     </div>
 </div>
 
@@ -136,7 +141,11 @@
                         <div class="flex items-center space-x-2 ml-4">
                             <a href="{{ route('admin.users.show', $user) }}" 
                                class="text-blue-600 hover:text-blue-900 text-sm font-medium">View</a>
-                            @if($user->id !== auth()->id() && (!$user->isAdmin() || auth()->user()->isMasterAdmin()))
+                            @if(auth()->user()->isMasterAdmin() && auth()->user()->canManageUser($user))
+                                <a href="{{ route('admin.users.edit', $user) }}" 
+                                   class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">Edit</a>
+                            @endif
+                            @if(auth()->user()->canManageUser($user))
                                 <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')

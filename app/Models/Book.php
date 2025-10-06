@@ -52,7 +52,9 @@ class Book extends Model
     
     public function getAuthorsStringAttribute(): string
     {
-        return $this->authors->pluck('name')->implode(', ');
+        return $this->authors->map(function($author) {
+            return $author->getFullNameAttribute();
+        })->implode(', ');
     }
 
     
@@ -150,6 +152,97 @@ public function readersFinished()
 {
     return $this->belongsToMany(User::class, 'reading_statuses')
                 ->wherePivot('status', ReadingStatus::STATUS_FINISHED_READING);
+}
+
+/**
+ * User interaction relationships
+ */
+public function userRatings()
+{
+    return $this->hasMany(UserRating::class);
+}
+
+public function userReviews()
+{
+    return $this->hasMany(UserReview::class);
+}
+
+public function userWishlists()
+{
+    return $this->hasMany(UserWishlist::class);
+}
+
+/**
+ * Get user's specific interactions with this book
+ */
+public function getUserRating($userId = null)
+{
+    $userId = $userId ?? auth()->id();
+    if (!$userId) return null;
+    
+    return $this->userRatings()->where('user_id', $userId)->first();
+}
+
+public function getUserReview($userId = null)
+{
+    $userId = $userId ?? auth()->id();
+    if (!$userId) return null;
+    
+    return $this->userReviews()->where('user_id', $userId)->first();
+}
+
+public function getUserReadingStatus($userId = null)
+{
+    $userId = $userId ?? auth()->id();
+    if (!$userId) return null;
+    
+    return $this->readingStatuses()->where('user_id', $userId)->first();
+}
+
+public function isInUserWishlist($userId = null): bool
+{
+    $userId = $userId ?? auth()->id();
+    if (!$userId) return false;
+    
+    return $this->userWishlists()->where('user_id', $userId)->exists();
+}
+
+/**
+ * Get computed rating statistics
+ */
+public function getRatingDistribution(): array
+{
+    $ratings = $this->userRatings()
+                   ->selectRaw('rating, COUNT(*) as count')
+                   ->groupBy('rating')
+                   ->pluck('count', 'rating')
+                   ->toArray();
+
+    $distribution = [];
+    for ($i = 1; $i <= 5; $i++) {
+        $distribution[$i] = $ratings[$i] ?? 0;
+    }
+
+    return $distribution;
+}
+
+public function updateAverageRating(): void
+{
+    $ratings = $this->userRatings();
+    $count = $ratings->count();
+    
+    if ($count > 0) {
+        $average = $ratings->avg('rating');
+        $this->update([
+            'average_rating' => round($average, 2),
+            'ratings_count' => $count,
+        ]);
+    } else {
+        $this->update([
+            'average_rating' => 0,
+            'ratings_count' => 0,
+        ]);
+    }
 }
 
 /**

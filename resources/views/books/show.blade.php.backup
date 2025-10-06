@@ -33,28 +33,27 @@
                     
                     @auth
                         <!-- Reading Status Dropdown -->
-                        <div class="mb-4 relative">
-                            <button id="reading-status-btn" class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors {{ isset($userInteractions['reading_status']) && $userInteractions['reading_status'] ? 'bg-gray-100 border-gray-400' : '' }}">
-                                <svg class="w-4 h-4 mr-2 {{ isset($userInteractions['reading_status']) && $userInteractions['reading_status'] ? 'text-gray-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                </svg>
-                                <span id="reading-status-text">
-                                    @if(isset($userInteractions['reading_status']) && $userInteractions['reading_status'])
-                                        {{ ucwords(str_replace('_', ' ', $userInteractions['reading_status']->status)) }}
-                                    @else
-                                        Want to Read
+                        <div class="mb-4">
+                            <div class="relative">
+                                <select id="reading-status" class="w-full px-4 py-3 bg-green-600 text-white font-semibold rounded-lg appearance-none cursor-pointer hover:bg-green-700 transition-colors">
+                                    @if(!isset($userInteractions['reading_status']) || !$userInteractions['reading_status'])
+                                        <option value="">Want to Read</option>
                                     @endif
-                                </span>
-                                <svg class="w-4 h-4 ml-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            
-                            <!-- Hidden dropdown menu -->
-                            <div id="reading-status-dropdown" class="hidden absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
-                                <button data-status="want_to_read" class="w-full px-4 py-3 text-left hover:bg-gray-50 first:rounded-t-lg">Want to Read</button>
-                                <button data-status="currently_reading" class="w-full px-4 py-3 text-left hover:bg-gray-50">Currently Reading</button>
-                                <button data-status="finished_reading" class="w-full px-4 py-3 text-left hover:bg-gray-50 last:rounded-b-lg">Finished Reading</button>
+                                    <option value="want_to_read" {{ isset($userInteractions['reading_status']) && $userInteractions['reading_status']->status == 'want_to_read' ? 'selected' : '' }}>
+                                        Want to Read
+                                    </option>
+                                    <option value="currently_reading" {{ isset($userInteractions['reading_status']) && $userInteractions['reading_status']->status == 'currently_reading' ? 'selected' : '' }}>
+                                        Currently Reading
+                                    </option>
+                                    <option value="finished_reading" {{ isset($userInteractions['reading_status']) && $userInteractions['reading_status']->status == 'finished_reading' ? 'selected' : '' }}>
+                                        Finished Reading
+                                    </option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                         
@@ -68,19 +67,24 @@
                             </span>
                         </button>
                         
-                        <!-- Rate This Book -->
-                        <div class="text-center">
-                            <p class="text-sm text-gray-600 mb-2">Rate this book</p>
-                            <div class="flex justify-center space-x-1 mb-4" id="user-rating">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <button class="star-btn text-gray-300 hover:text-yellow-400 transition-colors" data-rating="{{ $i }}">
-                                        <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20">
+                        <!-- Your Rating -->
+                        @if(isset($userInteractions['user_rating']) && $userInteractions['user_rating'])
+                            <div class="text-center">
+                                <p class="text-sm text-gray-600 mb-2">Your rating</p>
+                                <div class="flex justify-center space-x-1 mb-4">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <svg class="w-6 h-6 {{ $userInteractions['user_rating']->rating >= $i ? 'text-yellow-400' : 'text-gray-300' }} fill-current" viewBox="0 0 20 20">
                                             <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
                                         </svg>
-                                    </button>
-                                @endfor
+                                    @endfor
+                                </div>
+                                <p class="text-xs text-gray-500">{{ $userInteractions['user_rating']->rating }} stars</p>
                             </div>
-                        </div>
+                        @else
+                            <div class="text-center">
+                                <p class="text-sm text-gray-600 mb-4">You haven't rated this book yet</p>
+                            </div>
+                        @endif
                     @else
                         <a href="{{ route('login') }}" class="w-full block text-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
                             Login to Track This Book
@@ -130,7 +134,7 @@
                                 @endfor
                             </div>
                             <span class="text-lg font-semibold">{{ number_format($book->average_rating, 2) }}</span>
-                            <span class="text-gray-500">{{ number_format($book->ratings_count) }} ratings • {{ number_format($organizedReviews->count()) }} reviews</span>
+                            <span class="text-gray-500">{{ number_format($book->ratings_count) }} ratings • 5,073 reviews</span>
                         </div>
                         
                         <!-- Subtitle/Tagline -->
@@ -242,7 +246,7 @@
                         <!-- User Rating Stars -->
                         <div class="flex justify-center space-x-1 mb-4" id="user-rating-large">
                             @for($i = 1; $i <= 5; $i++)
-                                <button class="star-btn-large {{ isset($userInteractions['rating']) && $userInteractions['rating'] >= $i ? 'text-yellow-400' : 'text-gray-300' }} hover:text-yellow-400 transition-colors" data-rating="{{ $i }}">
+                                <button class="star-btn-large {{ isset($userInteractions['user_rating']) && $userInteractions['user_rating'] && $userInteractions['user_rating']->rating >= $i ? 'text-yellow-400' : 'text-gray-300' }} hover:text-yellow-400 transition-colors" data-rating="{{ $i }}">
                                     <svg class="w-8 h-8 fill-current" viewBox="0 0 20 20">
                                         <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
                                     </svg>
@@ -250,196 +254,76 @@
                             @endfor
                         </div>
                         
-                        <div class="text-center">
-                            <span class="text-sm text-gray-600">
-                                @if(isset($userInteractions['rating']) && $userInteractions['rating'])
-                                    You rated this book {{ $userInteractions['rating'] }} star{{ $userInteractions['rating'] > 1 ? 's' : '' }}
+                        <div class="text-center mb-4">
+                            <span class="text-sm text-gray-600" id="rating-status">
+                                @if(isset($userInteractions['user_rating']) && $userInteractions['user_rating'])
+                                    You rated this book {{ $userInteractions['user_rating']->rating }} star{{ $userInteractions['user_rating']->rating > 1 ? 's' : '' }}
                                 @else
                                     Rate this book
                                 @endif
                             </span>
+                            @if(isset($userInteractions['user_rating']) && $userInteractions['user_rating'])
+                                <button id="clear-rating-btn" class="ml-4 text-xs text-red-600 hover:text-red-800 underline">
+                                    Clear rating
+                                </button>
+                            @endif
                         </div>
                         
                         <!-- Write/Edit Review Button -->
                         <div class="text-center mt-4">
                             <button id="write-review-btn" class="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                                @if(isset($userInteractions['review']) && $userInteractions['review'])
+                                @if(isset($userInteractions['user_review']) && $userInteractions['user_review'])
                                     Edit Review
                                 @else
                                     Write a Review
                                 @endif
                             </button>
-                            
-                            <!-- Rating and Review Management -->
-                            <div class="flex justify-center gap-3 mt-3">
-                                @if(isset($userInteractions['rating']) && $userInteractions['rating'])
-                                    <button id="clear-rating-btn" class="text-sm text-red-600 hover:text-red-800 underline">
-                                        Clear Rating
-                                    </button>
-                                @endif
-                                
-                                @if(isset($userInteractions['review']) && $userInteractions['review'])
-                                    <button id="delete-review-btn" class="text-sm text-red-600 hover:text-red-800 underline">
-                                        Delete Review
-                                    </button>
-                                @endif
-                            </div>
                         </div>
+
+                        <!-- Existing Review Display -->
+                        @if(isset($userInteractions['user_review']) && $userInteractions['user_review'])
+                            <div id="existing-review" class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-semibold text-gray-900">Your Review</h4>
+                                    <button id="delete-review-btn" class="text-xs text-red-600 hover:text-red-800 underline">
+                                        Delete
+                                    </button>
+                                </div>
+                                <p class="text-gray-700">{{ $userInteractions['user_review']->review_text }}</p>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    Posted {{ $userInteractions['user_review']->created_at->diffForHumans() }}
+                                    @if($userInteractions['user_review']->updated_at != $userInteractions['user_review']->created_at)
+                                        • Edited {{ $userInteractions['user_review']->updated_at->diffForHumans() }}
+                                    @endif
+                                </p>
+                            </div>
+                        @endif
                         
                         <!-- Review Form (Hidden by default) -->
                         <div id="review-form" class="hidden mt-6">
-                            <textarea class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                            <textarea id="review-textarea" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                       rows="6" 
-                                      placeholder="What did you think of this book? Share your thoughts...">@if(isset($userInteractions['review']) && $userInteractions['review']){{ $userInteractions['review']->review_text }}@endif</textarea>
-                            <div class="flex justify-between items-center mt-4">
-                                <label class="flex items-center">
-                                    <input type="checkbox" id="spoiler-checkbox" class="mr-2" @if(isset($userInteractions['review']) && $userInteractions['review'] && $userInteractions['review']->is_spoiler) checked @endif>
-                                    <span class="text-sm text-gray-600">Contains spoilers</span>
-                                </label>
-                                <div class="flex gap-3">
-                                    <button id="cancel-review-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
-                                    <button id="submit-review-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                        @if(isset($userInteractions['review']) && $userInteractions['review'])
-                                            Update Review
-                                        @else
-                                            Post Review
-                                        @endif
-                                    </button>
-                                </div>
+                                      placeholder="What did you think of this book? Share your thoughts...">{{ isset($userInteractions['user_review']) && $userInteractions['user_review'] ? $userInteractions['user_review']->review_text : '' }}</textarea>
+                            <div class="flex justify-end gap-3 mt-4">
+                                <button id="cancel-review-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                                <button id="post-review-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    @if(isset($userInteractions['user_review']) && $userInteractions['user_review'])
+                                        Update Review
+                                    @else
+                                        Post Review
+                                    @endif
+                                </button>
                             </div>
                         </div>
                     </div>
                 @endauth
-
-                <!-- All Ratings & Reviews -->
-                <div class="space-y-6">
-                    @if($organizedReviews->count() > 0 || $allRatings->count() > 0)
-                        <div class="border-b border-gray-200 pb-4 mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900">Community Ratings & Reviews</h3>
-                            <p class="text-sm text-gray-600">
-                                {{ $allRatings->count() }} rating{{ $allRatings->count() != 1 ? 's' : '' }}
-                                @if($organizedReviews->count() > 0)
-                                    • {{ $organizedReviews->count() }} review{{ $organizedReviews->count() != 1 ? 's' : '' }}
-                                @endif
-                            </p>
-                        </div>
-
-                        <!-- Reviews with Ratings -->
-                        @foreach($organizedReviews as $review)
-                            <div class="border-b border-gray-200 pb-6 mb-6 last:border-b-0">
-                                <div class="flex gap-4">
-                                    <!-- User Avatar -->
-                                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <span class="text-white font-semibold text-lg">
-                                            {{ strtoupper(substr($review->user->name, 0, 1)) }}
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="flex-1">
-                                        <!-- User Info and Rating -->
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div>
-                                                <h4 class="font-semibold text-gray-900">
-                                                    {{ $review->user->name }}
-                                                    @if($review->user_id === auth()->id())
-                                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2">Your Review</span>
-                                                    @endif
-                                                </h4>
-                                                <p class="text-sm text-gray-500">{{ $review->created_at->format('M j, Y') }}</p>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- User's Rating for this review -->
-                                        @php
-                                            $userRatingForReview = $allRatings->where('user_id', $review->user_id)->first();
-                                        @endphp
-                                        @if($userRatingForReview)
-                                            <div class="flex items-center gap-2 mb-3">
-                                                <div class="flex text-yellow-400">
-                                                    @for($i = 1; $i <= 5; $i++)
-                                                        @if($i <= $userRatingForReview->rating)
-                                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                                            </svg>
-                                                        @else
-                                                            <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
-                                                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                                            </svg>
-                                                        @endif
-                                                    @endfor
-                                                </div>
-                                                <span class="text-sm text-gray-600">{{ $userRatingForReview->rating }}/5 stars</span>
-                                            </div>
-                                        @endif
-                                        
-                                        <!-- Review Text -->
-                                        <div class="text-gray-700 leading-relaxed">
-                                            {!! nl2br(e($review->review_text)) !!}
-                                        </div>
-                                        
-                                        @if($review->is_spoiler)
-                                            <div class="mt-2">
-                                                <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Contains Spoilers</span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-
-                        <!-- Ratings Only (users who rated but didn't review) -->
-                        @php
-                            $ratingsOnly = $allRatings->whereNotIn('user_id', $organizedReviews->pluck('user_id'));
-                        @endphp
-                        
-                        @if($ratingsOnly->count() > 0)
-                            <div class="border-t border-gray-200 pt-6">
-                                <h4 class="text-md font-semibold text-gray-900 mb-4">Other Ratings</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    @foreach($ratingsOnly as $rating)
-                                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                            <!-- User Avatar -->
-                                            <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                                <span class="text-white font-semibold text-sm">
-                                                    {{ strtoupper(substr($rating->user->name, 0, 1)) }}
-                                                </span>
-                                            </div>
-                                            
-                                            <div class="flex-1">
-                                                <p class="font-medium text-gray-900">{{ $rating->user->name }}</p>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="flex text-yellow-400">
-                                                        @for($i = 1; $i <= 5; $i++)
-                                                            @if($i <= $rating->rating)
-                                                                <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20">
-                                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                                                </svg>
-                                                            @else
-                                                                <svg class="w-3 h-3 text-gray-300 fill-current" viewBox="0 0 20 20">
-                                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                                                </svg>
-                                                            @endif
-                                                        @endfor
-                                                    </div>
-                                                    <span class="text-xs text-gray-500">{{ $rating->created_at->format('M j, Y') }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                    @else
-                        <div class="text-center py-8">
-                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
-                            <p class="text-gray-600">Be the first to rate and review this book!</p>
-                        </div>
-                    @endif
+                
+                <!-- Friends & Following -->
+                <div class="border-b border-gray-200 pb-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Friends & Following</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-gray-600">No one you know has read this book. <a href="#" class="text-blue-600 hover:text-blue-800">Recommend it to a friend!</a></p>
+                    </div>
                 </div>
                 </div>
             </div>
@@ -494,6 +378,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('Initializing with Book ID:', bookId);
     console.log('CSRF Token:', csrfToken ? 'Present' : 'Missing');
+    
+    // Initialize user rating from server
+    let currentUserRating = {{ isset($userInteractions['user_rating']) && $userInteractions['user_rating'] ? $userInteractions['user_rating']->rating : 0 }};
+    console.log('Initial user rating:', currentUserRating);
     
     // Test authentication first
     fetch(`/api/books/${bookId}/test-auth`, {
@@ -553,53 +441,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Reading Status Dropdown
-    const readingStatusBtn = document.getElementById('reading-status-btn');
-    const readingStatusDropdown = document.getElementById('reading-status-dropdown');
-    const readingStatusText = document.getElementById('reading-status-text');
+    const readingStatusSelect = document.getElementById('reading-status');
     
-    if (readingStatusBtn && readingStatusDropdown) {
-        // Toggle dropdown
-        readingStatusBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            readingStatusDropdown.classList.toggle('hidden');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!readingStatusBtn.contains(e.target) && !readingStatusDropdown.contains(e.target)) {
-                readingStatusDropdown.classList.add('hidden');
-            }
-        });
-
-        // Handle status selection
-        const statusOptions = readingStatusDropdown.querySelectorAll('button[data-status]');
-        statusOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const status = this.getAttribute('data-status');
-                const statusText = this.textContent;
-                
-                readingStatusDropdown.classList.add('hidden');
-                readingStatusText.textContent = statusText;
-                
-                // Add selected styling to button
-                readingStatusBtn.classList.add('bg-gray-100', 'border-gray-400');
-                readingStatusBtn.classList.remove('border-gray-300');
-                
-                // Update icon color
-                const icon = readingStatusBtn.querySelector('svg');
-                if (icon) {
-                    icon.classList.add('text-gray-600');
-                    icon.classList.remove('text-gray-500');
-                }
-                
-                // Send status update to server
-                makeAjaxRequest(`/api/books/${bookId}/reading-status`, 'PUT', { status: status })
+    if (readingStatusSelect) {
+        readingStatusSelect.addEventListener('change', function() {
+            const status = this.value;
+            if (!status) return;
+            
+            makeAjaxRequest(`/api/books/${bookId}/reading-status`, 'PUT', { status: status })
                 .then(response => {
                     if (response.success) {
                         console.log('Reading status updated successfully');
+                        // Update visual feedback
+                        this.className = 'w-full px-4 py-3 font-semibold rounded-lg appearance-none cursor-pointer transition-colors text-white ' + 
+                            (status === 'currently_reading' ? 'bg-orange-600 hover:bg-orange-700' : 
+                             status === 'finished_reading' ? 'bg-blue-600 hover:bg-blue-700' : 
+                             'bg-green-600 hover:bg-green-700');
                     }
                 });
-            });
         });
     }
     
@@ -702,102 +561,353 @@ document.addEventListener('DOMContentLoaded', function() {
     // Write Review Form
     const writeReviewBtn = document.getElementById('write-review-btn');
     const reviewForm = document.getElementById('review-form');
-    const clearRatingBtn = document.getElementById('clear-rating-btn');
-    const deleteReviewBtn = document.getElementById('delete-review-btn');
     
     if (writeReviewBtn && reviewForm) {
-        const textarea = reviewForm.querySelector('textarea');
-        const spoilerCheckbox = document.getElementById('spoiler-checkbox');
-        const cancelBtn = document.getElementById('cancel-review-btn');
-        const submitBtn = document.getElementById('submit-review-btn');
-        
-        // Handle review form toggle
         writeReviewBtn.addEventListener('click', function() {
             reviewForm.classList.toggle('hidden');
             if (!reviewForm.classList.contains('hidden')) {
-                textarea.focus();
+                reviewForm.querySelector('textarea').focus();
+                writeReviewBtn.textContent = 'Cancel Review';
+            } else {
+                writeReviewBtn.textContent = 'Write a Review';
             }
         });
         
-        // Handle cancel button
+        // Cancel button in review form
+        const cancelBtn = reviewForm.querySelector('button:first-of-type');
         if (cancelBtn) {
             cancelBtn.addEventListener('click', function() {
                 reviewForm.classList.add('hidden');
-                // Reset form if it was empty initially
-                const hasExistingReview = {{ isset($userInteractions['review']) && $userInteractions['review'] ? 'true' : 'false' }};
-                if (!hasExistingReview) {
-                    textarea.value = '';
-                    spoilerCheckbox.checked = false;
-                }
+                writeReviewBtn.textContent = 'Write a Review';
+                reviewForm.querySelector('textarea').value = '';
             });
         }
         
-        // Handle review submission
-        if (submitBtn) {
+        // Submit review
+        const submitBtn = reviewForm.querySelector('button:last-of-type');
+        const textarea = reviewForm.querySelector('textarea');
+        
+        if (submitBtn && textarea) {
             submitBtn.addEventListener('click', function() {
                 const reviewText = textarea.value.trim();
-                const isSpoiler = spoilerCheckbox.checked;
                 
                 if (reviewText.length < 10) {
                     alert('Review must be at least 10 characters long');
                     return;
                 }
                 
-                // Determine if this is an update or new review
-                const hasExistingReview = {{ isset($userInteractions['review']) && $userInteractions['review'] ? 'true' : 'false' }};
-                const method = hasExistingReview ? 'PUT' : 'POST';
-                const url = `/api/books/${bookId}/review`;
-                
-                makeAjaxRequest(url, method, { 
+                makeAjaxRequest(`/api/books/${bookId}/review`, 'POST', { 
                     review_text: reviewText,
-                    is_spoiler: isSpoiler
+                    is_spoiler: false 
                 })
-                .then(response => {
-                    if (response.success) {
-                        alert(hasExistingReview ? 'Review updated successfully!' : 'Review posted successfully!');
-                        reviewForm.classList.add('hidden');
-                        
-                        // Update button text and show management options
-                        writeReviewBtn.textContent = 'Edit Review';
-                        
-                        // Reload page to show updated review
-                        window.location.reload();
-                    }
-                });
+                    .then(response => {
+                        if (response.success) {
+                            alert('Review posted successfully!');
+                            reviewForm.classList.add('hidden');
+                            writeReviewBtn.textContent = 'Edit Review';
+                            textarea.value = '';
+                        }
+                    });
             });
         }
     }
-    
-    // Clear Rating functionality
-    if (clearRatingBtn) {
-        clearRatingBtn.addEventListener('click', function() {
-            if (confirm('Are you sure you want to clear your rating? This action cannot be undone.')) {
-                makeAjaxRequest(`/api/books/${bookId}/rating`, 'DELETE')
-                .then(response => {
-                    if (response.success) {
-                        alert('Rating cleared successfully!');
-                        window.location.reload();
+    @endauth
+});
+</script>
+                        // Update UI if needed
+                    } else {
+                        console.error('Failed to update reading status:', response.message);
+                        alert('Failed to update reading status. Please try again.');
                     }
                 });
+        });
+    }
+    
+    // Wishlist Button
+    const wishlistBtn = document.getElementById('wishlist-btn');
+    const wishlistIcon = document.getElementById('wishlist-icon');
+    const wishlistText = document.getElementById('wishlist-text');
+    
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', function() {
+            makeAjaxRequest(`/api/books/${bookId}/wishlist/toggle`, 'POST')
+                .then(response => {
+                    if (response.success) {
+                        const isInWishlist = response.data.is_in_wishlist;
+                        const path = wishlistIcon.querySelector('path');
+                        
+                        if (isInWishlist) {
+                            // Added to wishlist
+                            path.setAttribute('d', 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z');
+                            wishlistIcon.classList.add('text-red-500');
+                            wishlistIcon.classList.remove('text-gray-400');
+                            wishlistText.textContent = 'In Wishlist';
+                            wishlistBtn.classList.add('bg-red-50', 'border-red-300', 'text-red-700');
+                            wishlistBtn.classList.remove('hover:bg-gray-50');
+                        } else {
+                            // Removed from wishlist
+                            path.setAttribute('d', 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z');
+                            wishlistIcon.classList.remove('text-red-500');
+                            wishlistIcon.classList.add('text-gray-400');
+                            wishlistText.textContent = 'Add to Wishlist';
+                            wishlistBtn.classList.remove('bg-red-50', 'border-red-300', 'text-red-700');
+                            wishlistBtn.classList.add('hover:bg-gray-50');
+                        }
+                    } else {
+                        console.error('Failed to toggle wishlist:', response.message);
+                        alert('Failed to update wishlist. Please try again.');
+                    }
+                });
+        });
+    }
+    
+    // Star Rating System
+    const starButtons = document.querySelectorAll('.star-btn');
+    const starButtonsLarge = document.querySelectorAll('.star-btn-large');
+    let currentUserRating = {{ isset($userInteractions['rating']) ? $userInteractions['rating'] : 0 }};
+    
+    function handleStarRating(stars, isLarge = false) {
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                highlightStars(stars, rating);
+            });
+            
+            star.addEventListener('mouseleave', function() {
+                // Reset to current user rating
+                highlightStars(stars, currentUserRating);
+            });
+            
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                
+                makeAjaxRequest(`/api/books/${bookId}/rating`, 'POST', { rating: rating })
+                    .then(response => {
+                        if (response.success) {
+                            currentUserRating = rating;
+                            highlightStars(stars, rating);
+                            
+                            // Update the rating text
+                            const ratingText = document.querySelector('#user-rating-large').nextElementSibling.querySelector('span');
+                            if (ratingText) {
+                                ratingText.textContent = `You rated this book ${rating} star${rating > 1 ? 's' : ''}`;
+                            }
+                            
+                            // Update overall rating display if present
+                            updateOverallRating(response.data.average_rating, response.data.ratings_count);
+                        } else {
+                            console.error('Failed to save rating:', response.message);
+                            alert('Failed to save rating. Please try again.');
+                        }
+                    });
+            });
+        });
+    }
+    
+    function highlightStars(stars, rating) {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('text-gray-300');
+                star.classList.add('text-yellow-400');
+            } else {
+                star.classList.remove('text-yellow-400');
+                star.classList.add('text-gray-300');
             }
         });
     }
     
-    // Delete Review functionality  
+    function updateOverallRating(averageRating, ratingsCount) {
+        // Update any overall rating displays on the page
+        const overallRatingElements = document.querySelectorAll('[data-overall-rating]');
+        overallRatingElements.forEach(element => {
+            element.textContent = `${averageRating} (${ratingsCount} ratings)`;
+        });
+    }
+    
+    if (starButtons.length > 0) {
+        handleStarRating(starButtons);
+    }
+    
+    if (starButtonsLarge.length > 0) {
+        handleStarRating(starButtonsLarge, true);
+        // Initialize with current rating
+        highlightStars(starButtonsLarge, currentUserRating);
+    }
+
+    // Clear Rating Button
+    const clearRatingBtn = document.getElementById('clear-rating-btn');
+    if (clearRatingBtn) {
+        clearRatingBtn.addEventListener('click', function() {
+            console.log('Clear rating button clicked');
+            if (confirm('Are you sure you want to clear your rating?')) {
+                makeAjaxRequest(`/api/books/${bookId}/rating`, 'DELETE')
+                .then(response => {
+                    console.log('Clear rating response:', response);
+                    if (response.success) {
+                        // Update UI
+                        const starButtonsLarge = document.querySelectorAll('.star-btn-large');
+                        starButtonsLarge.forEach(star => {
+                            star.classList.remove('text-yellow-400');
+                            star.classList.add('text-gray-300');
+                        });
+                        
+                        // Update rating status text
+                        const ratingStatus = document.getElementById('rating-status');
+                        if (ratingStatus) {
+                            ratingStatus.textContent = 'Rate this book';
+                        }
+                        
+                        // Hide clear button
+                        clearRatingBtn.style.display = 'none';
+                        
+                        // Update sidebar rating section - more specific selector
+                        const sidebarRatingDiv = document.querySelector('.text-center .text-sm.text-gray-600.mb-4');
+                        if (sidebarRatingDiv) {
+                            sidebarRatingDiv.textContent = "You haven't rated this book yet";
+                        }
+                        
+                        alert('Rating cleared successfully!');
+                    } else {
+                        console.error('Failed to clear rating:', response);
+                        alert('Failed to clear rating. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Clear rating error:', error);
+                    alert('Error clearing rating: ' + error.message);
+                });
+            }
+        });
+    } else {
+        console.log('Clear rating button not found');
+    }
+
+    // Delete Review Button
+    const deleteReviewBtn = document.getElementById('delete-review-btn');
     if (deleteReviewBtn) {
         deleteReviewBtn.addEventListener('click', function() {
+            console.log('Delete review button clicked');
             if (confirm('Are you sure you want to delete your review? This action cannot be undone.')) {
                 makeAjaxRequest(`/api/books/${bookId}/review`, 'DELETE')
                 .then(response => {
+                    console.log('Delete review response:', response);
                     if (response.success) {
+                        // Hide existing review display
+                        const existingReview = document.getElementById('existing-review');
+                        if (existingReview) {
+                            existingReview.style.display = 'none';
+                        }
+                        
+                        // Update button text
+                        const writeReviewBtn = document.getElementById('write-review-btn');
+                        if (writeReviewBtn) {
+                            writeReviewBtn.textContent = 'Write a Review';
+                        }
+                        
+                        // Clear review form
+                        const reviewTextarea = document.getElementById('review-textarea');
+                        if (reviewTextarea) {
+                            reviewTextarea.value = '';
+                        }
+                        
+                        // Update post button text
+                        const postReviewBtn = document.getElementById('post-review-btn');
+                        if (postReviewBtn) {
+                            postReviewBtn.textContent = 'Post Review';
+                        }
+                        
                         alert('Review deleted successfully!');
-                        window.location.reload();
+                    } else {
+                        console.error('Failed to delete review:', response);
+                        alert('Failed to delete review. Please try again.');
                     }
+                })
+                .catch(error => {
+                    console.error('Delete review error:', error);
+                    alert('Error deleting review: ' + error.message);
                 });
             }
         });
+    } else {
+        console.log('Delete review button not found');
     }
-    @endauth
+
+    // Enhanced Review Form Management
+    const writeReviewBtn = document.getElementById('write-review-btn');
+    const reviewForm = document.getElementById('review-form');
+    const cancelReviewBtn = document.getElementById('cancel-review-btn');
+    const postReviewBtn = document.getElementById('post-review-btn');
+    const reviewTextarea = document.getElementById('review-textarea');
+
+    if (writeReviewBtn && reviewForm) {
+        writeReviewBtn.addEventListener('click', function() {
+            reviewForm.classList.toggle('hidden');
+            if (!reviewForm.classList.contains('hidden')) {
+                reviewTextarea.focus();
+            }
+        });
+    }
+
+    if (cancelReviewBtn && reviewForm) {
+        cancelReviewBtn.addEventListener('click', function() {
+            reviewForm.classList.add('hidden');
+            // Reset form if it was for new review
+            if (writeReviewBtn.textContent === 'Write a Review') {
+                reviewTextarea.value = '';
+            }
+        });
+    }
+
+    if (postReviewBtn && reviewTextarea) {
+        postReviewBtn.addEventListener('click', function() {
+            const reviewText = reviewTextarea.value.trim();
+            
+            if (reviewText.length < 10) {
+                alert('Review must be at least 10 characters long.');
+                return;
+            }
+            
+            const isUpdate = writeReviewBtn.textContent === 'Edit Review';
+            const method = isUpdate ? 'PUT' : 'POST';
+            
+            console.log(`${isUpdate ? 'Updating' : 'Creating'} review with method ${method}`);
+            
+            makeAjaxRequest(`/api/books/${bookId}/review`, method, {
+                review_text: reviewText,
+                is_spoiler: false
+            })
+            .then(response => {
+                console.log('Review response:', response);
+                if (response.success) {
+                    // Hide form
+                    reviewForm.classList.add('hidden');
+                    
+                    if (isUpdate) {
+                        // Update existing review display
+                        const existingReview = document.getElementById('existing-review');
+                        if (existingReview) {
+                            const reviewParagraph = existingReview.querySelector('p');
+                            if (reviewParagraph) {
+                                reviewParagraph.textContent = reviewText;
+                            }
+                        }
+                        alert('Review updated successfully!');
+                    } else {
+                        // For new reviews, reload the page to show the review
+                        alert('Review posted successfully!');
+                        window.location.reload();
+                    }
+                } else {
+                    console.error('Failed to save review:', response);
+                    alert('Failed to save review: ' + (response.message || 'Please try again.'));
+                }
+            })
+            .catch(error => {
+                console.error('Review error:', error);
+                alert('Error saving review: ' + error.message);
+            });
+        });
+    }
 });
 </script>
 @endsection

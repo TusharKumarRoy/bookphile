@@ -15,11 +15,13 @@ class Author extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'biography',
         'birth_date',
         'death_date',
         'image',
+        'nationality',
     ];
 
     /**
@@ -41,6 +43,14 @@ class Author extends Model
     public function books()
     {
         return $this->belongsToMany(Book::class)->withTimestamps();
+    }
+
+    /**
+     * Get the author's full name
+     */
+    public function getFullNameAttribute(): string
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
     }
 
     /**

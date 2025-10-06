@@ -125,6 +125,29 @@ public function favoriteBooks()
                 ->withTimestamps();
 }
 
+/**
+ * User interaction relationships
+ */
+public function userRatings()
+{
+    return $this->hasMany(UserRating::class);
+}
+
+public function userReviews()
+{
+    return $this->hasMany(UserReview::class);
+}
+
+public function userWishlists()
+{
+    return $this->hasMany(UserWishlist::class);
+}
+
+public function wishlistBooks()
+{
+    return $this->belongsToMany(Book::class, 'user_wishlists')->withTimestamps();
+}
+
 
 public function getReadingStatusFor(Book $book): ?ReadingStatus
 {
@@ -138,6 +161,21 @@ public function hasRead(Book $book): bool
                 ->where('book_id', $book->id)
                 ->where('status', ReadingStatus::STATUS_FINISHED_READING)
                 ->exists();
+}
+
+public function hasRatedBook(Book $book): bool
+{
+    return $this->userRatings()->where('book_id', $book->id)->exists();
+}
+
+public function hasReviewedBook(Book $book): bool
+{
+    return $this->userReviews()->where('book_id', $book->id)->exists();
+}
+
+public function isBookInWishlist(Book $book): bool
+{
+    return $this->userWishlists()->where('book_id', $book->id)->exists();
 }
 
 

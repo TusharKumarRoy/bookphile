@@ -16,7 +16,7 @@
     </head>
     <body class="font-sans antialiased">
         <!-- Check if this is a book page or regular Breeze page -->
-        @if(request()->routeIs('books.*') || request()->routeIs('home'))
+        @if(request()->routeIs('books.*') || request()->routeIs('authors.*') || request()->routeIs('genres.*') || request()->routeIs('home'))
             <!-- Custom navigation for book pages -->
             <nav class="bg-white shadow-sm border-b border-gray-200">
                 <div class="max-w-7xl mx-auto px-4">
@@ -29,8 +29,8 @@
                         
                         <div class="hidden md:flex items-center space-x-8">
                             <a href="{{ route('books.index') }}" class="text-gray-700 hover:text-blue-600">Books</a>
-                            <a href="#" class="text-gray-700 hover:text-blue-600">Authors</a>
-                            <a href="#" class="text-gray-700 hover:text-blue-600">Genres</a>
+                            <a href="{{ route('authors.index') }}" class="text-gray-700 hover:text-blue-600">Authors</a>
+                            <a href="{{ route('genres.index') }}" class="text-gray-700 hover:text-blue-600">Genres</a>
                         </div>
                         
                         <div class="flex items-center space-x-4">

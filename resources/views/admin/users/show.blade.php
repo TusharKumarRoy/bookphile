@@ -12,7 +12,12 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ $user->getFullNameAttribute() }}</h2>
         </div>
         <div class="flex items-center space-x-4">
-            @if($user->id !== auth()->id() && (!$user->isAdmin() || auth()->user()->isMasterAdmin()))
+            @if(auth()->user()->isMasterAdmin() && auth()->user()->canManageUser($user))
+                <a href="{{ route('admin.users.edit', $user) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    Edit User
+                </a>
+            @endif
+            @if(auth()->user()->canManageUser($user))
                 <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline">
                     @csrf
                     @method('DELETE')

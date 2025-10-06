@@ -96,7 +96,7 @@
         </div>
         <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-                <span class="font-medium text-indigo-600">{{ number_format($stats['books_being_read']) }} reading now</span>
+                <a href="{{ route('admin.users.index') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Manage users</a>
             </div>
         </div>
     </div>
