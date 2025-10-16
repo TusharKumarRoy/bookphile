@@ -13,53 +13,6 @@
     overflow: hidden;
 }
 
-.modal-blur-backdrop {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.modal-content {
-    animation: modalSlideIn 0.3s ease-out;
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Prevent body scroll when modal is open */
-body.modal-open {
-    overflow: hidden;
-}
-
-/* Custom scrollbar for modal content */
-.modal-content::-webkit-scrollbar {
-    width: 6px;
-}
-
-.modal-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.modal-content::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
-}
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
 /* Modal backdrop blur effect */
 .modal-blur-backdrop {
     backdrop-filter: blur(4px);
@@ -74,13 +27,13 @@ body.modal-open {
 
 /* Enhanced modal animation */
 .modal-content {
-    animation: modalSlideIn 0.3s ease-out;
+    animation: modalSlideIn 0.2s ease-out;
 }
 
 @keyframes modalSlideIn {
     from {
         opacity: 0;
-        transform: translateY(-50px) scale(0.95);
+        transform: translateY(-30px) scale(0.98);
     }
     to {
         opacity: 1;
@@ -90,7 +43,7 @@ body.modal-open {
 
 /* Modal backdrop animation */
 .modal-backdrop {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
@@ -166,12 +119,27 @@ body.modal-open {
                         </h1>
                         
                         <!-- Email -->
-                        <p class="text-gray-600 text-lg mb-4">
-                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
-                            </svg>
-                            {{ $user->email }}
-                        </p>
+                        <div class="mb-4">
+                            <p class="text-gray-600 text-lg flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                </svg>
+                                <span id="email-display">
+                                    @if($user->email_visible || auth()->id() === $user->id)
+                                        {{ $user->email }}
+                                    @else
+                                        <span class="text-gray-400 italic">Email hidden</span>
+                                    @endif
+                                </span>
+                                
+                                <!-- Public/Private Label (close to email) -->
+                                <span id="email-status-label" 
+                                      class="ml-3 px-2 py-1 text-xs font-medium rounded-full
+                                             @if($user->email_visible) bg-green-100 text-green-800 @else bg-gray-100 text-gray-800 @endif">
+                                    @if($user->email_visible) Public @else Private @endif
+                                </span>
+                            </p>
+                        </div>
                         
                         <!-- Bio/About -->
                         @if($user->bio)
@@ -561,15 +529,39 @@ body.modal-open {
 
                     <!-- Email Field -->
                     <div>
-                        <label for="modal_email" class="block text-sm font-medium text-gray-700 mb-2">
-                            Email Address <span class="text-red-500">*</span>
-                        </label>
+                        <div class="flex items-center justify-between mb-2">
+                            <label for="modal_email" class="block text-sm font-medium text-gray-700">
+                                Email Address
+                            </label>
+                            @if(auth()->id() === $user->id)
+                                <!-- Email Visibility Toggle in Modal -->
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-600">Visibility:</span>
+                                    <button id="modal-email-visibility-toggle" 
+                                            type="button"
+                                            class="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors p-1 rounded-md hover:bg-gray-100"
+                                            onclick="toggleEmailVisibility()">
+                                        <svg id="modal-eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            @if($user->email_visible)
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                                            @endif
+                                        </svg>
+                                        <span id="modal-email-status-text" class="text-sm font-medium">
+                                            @if($user->email_visible) Public @else Private @endif
+                                        </span>
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
                         <input type="email" 
                                id="modal_email" 
                                name="email" 
                                value="{{ old('email', $user->email) }}"
-                               required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               readonly
+                               class="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
                                placeholder="Enter your email address">
                     </div>
 
@@ -793,33 +785,13 @@ document.addEventListener('click', function(event) {
 function openEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
     modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    
-    // Add fade-in animation
-    requestAnimationFrame(() => {
-        modal.style.opacity = '0';
-        modal.style.transform = 'scale(0.95)';
-        modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-        
-        requestAnimationFrame(() => {
-            modal.style.opacity = '1';
-            modal.style.transform = 'scale(1)';
-        });
-    });
+    document.body.classList.add('modal-open');
 }
 
 function closeEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
-    
-    // Add fade-out animation
-    modal.style.opacity = '0';
-    modal.style.transform = 'scale(0.95)';
-    
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        document.body.style.overflow = '';
-        modal.style.transition = '';
-    }, 300);
+    modal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
 }
 
     function submitEditProfile() {
@@ -847,13 +819,7 @@ function closeEditProfileModal() {
             hasErrors = true;
         }
         
-        if (!email) {
-            showFieldError('modal_email', 'Email address is required');
-            hasErrors = true;
-        } else if (!isValidEmail(email)) {
-            showFieldError('modal_email', 'Please enter a valid email address');
-            hasErrors = true;
-        }
+        // Email validation removed - field is now read-only
         
         // If validation fails, don't submit
         if (hasErrors) {
@@ -1015,6 +981,74 @@ function closeEditProfileModal() {
             }
         }
     });
+
+    // Email visibility toggle function
+    function toggleEmailVisibility() {
+        const button = document.getElementById('email-visibility-toggle') || document.getElementById('modal-email-visibility-toggle');
+        const statusLabel = document.getElementById('email-status-label');
+        const emailDisplay = document.getElementById('email-display');
+        
+        // Modal elements
+        const modalEyeIcon = document.getElementById('modal-eye-icon');
+        const modalStatusText = document.getElementById('modal-email-status-text');
+        
+        // Disable button during request
+        if (button) button.disabled = true;
+        
+        fetch('{{ route("users.toggle-email-visibility", $user) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const eyeOpenPath = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                `;
+                const eyeClosedPath = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                `;
+                
+                // Update dashboard elements
+                if (statusLabel) {
+                    if (data.email_visible) {
+                        statusLabel.className = 'ml-3 px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800';
+                        statusLabel.textContent = 'Public';
+                    } else {
+                        statusLabel.className = 'ml-3 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800';
+                        statusLabel.textContent = 'Private';
+                    }
+                }
+                
+                if (emailDisplay) {
+                    if (data.email_visible) {
+                        emailDisplay.innerHTML = '{{ $user->email }}';
+                    } else {
+                        emailDisplay.innerHTML = '<span class="text-gray-400 italic">Email hidden</span>';
+                    }
+                }
+                
+                // Update modal elements
+                if (modalEyeIcon) {
+                    modalEyeIcon.innerHTML = data.email_visible ? eyeOpenPath : eyeClosedPath;
+                }
+                
+                if (modalStatusText) {
+                    modalStatusText.textContent = data.email_visible ? 'Public' : 'Private';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error toggling email visibility:', error);
+        })
+        .finally(() => {
+            if (button) button.disabled = false;
+        });
+    }
 </script>
 
 @endsection

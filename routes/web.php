@@ -60,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{user}/settings', [App\Http\Controllers\UserController::class, 'settings'])->name('users.settings');
     Route::put('/users/{user}/update-email', [App\Http\Controllers\UserController::class, 'updateEmail'])->name('users.update-email');
     Route::put('/users/{user}/update-password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('users.update-password');
+    Route::post('/users/{user}/toggle-email-visibility', [App\Http\Controllers\UserController::class, 'toggleEmailVisibility'])->name('users.toggle-email-visibility');
 });
 
 // User book data AJAX routes - public access for viewing profiles

@@ -202,4 +202,23 @@ class UserController extends Controller
         
         return redirect()->route('users.settings', $user)->with('password_success', 'Password changed successfully!');
     }
+
+    public function toggleEmailVisibility(Request $request, User $user)
+    {
+        // Check if user can update this profile (only own profile)
+        if (auth()->id() !== $user->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
+        // Toggle email visibility
+        $user->update([
+            'email_visible' => !$user->email_visible,
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'email_visible' => $user->email_visible,
+            'status' => $user->email_visible ? 'Public' : 'Private'
+        ]);
+    }
 }
