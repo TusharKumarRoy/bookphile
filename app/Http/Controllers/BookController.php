@@ -38,7 +38,7 @@ class BookController extends Controller
                 $query->orderBy('average_rating', 'desc');
                 break;
             case 'year':
-                $query->orderBy('publication_year', 'desc');
+                $query->orderBy('publication_date', 'desc');
                 break;
             case 'pages':
                 $query->orderBy('page_count', 'desc');

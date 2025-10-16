@@ -48,6 +48,28 @@ Route::get('/authors/{author}', [App\Http\Controllers\AuthorController::class, '
 Route::get('/genres', [App\Http\Controllers\GenreController::class, 'index'])->name('genres.index');
 Route::get('/genres/{genre}', [App\Http\Controllers\GenreController::class, 'show'])->name('genres.show');
 
+// User profile routes (placeholder for future implementation)
+Route::get('/users/{user}', [App\Http\Controllers\UserController::class, 'show'])->name('users.show');
+
+// Profile editing routes (authenticated only)
+Route::middleware('auth')->group(function () {
+    Route::get('/users/{user}/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [App\Http\Controllers\UserController::class, 'update'])->name('users.update');
+    
+    // Profile settings routes
+    Route::get('/users/{user}/settings', [App\Http\Controllers\UserController::class, 'settings'])->name('users.settings');
+    Route::put('/users/{user}/update-email', [App\Http\Controllers\UserController::class, 'updateEmail'])->name('users.update-email');
+    Route::put('/users/{user}/update-password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('users.update-password');
+});
+
+// User book data AJAX routes - public access for viewing profiles
+Route::prefix('users/{user}')->group(function () {
+    Route::get('/want-to-read', [App\Http\Controllers\UserController::class, 'getWantToReadBooks'])->name('users.want-to-read');
+    Route::get('/currently-reading', [App\Http\Controllers\UserController::class, 'getCurrentlyReadingBooks'])->name('users.currently-reading');
+    Route::get('/finished-reading', [App\Http\Controllers\UserController::class, 'getFinishedReadingBooks'])->name('users.finished-reading');
+    Route::get('/wishlist', [App\Http\Controllers\UserController::class, 'getWishlistBooks'])->name('users.wishlist');
+});
+
 // API routes for authenticated users - using web middleware for session auth
 Route::middleware('auth')->prefix('api/books/{book}')->group(function () {
     // Test endpoint to verify auth is working

@@ -48,40 +48,6 @@ class User extends Authenticatable
     }
 
     
-    public function isRegularAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
-
-    
-    public function isUser(): bool
-    {
-        return $this->role === 'user' || is_null($this->role);
-    }
-
-    
-    public function canManageAdmins(): bool
-    {
-        return $this->isMasterAdmin();
-    }
-
-    
-    public function canManageUser(User $user): bool
-    {
-        // Master admin can manage anyone except themselves
-        if ($this->isMasterAdmin()) {
-            return $this->id !== $user->id;
-        }
-
-        // Regular admin can only manage regular users (not other admins)
-        if ($this->isRegularAdmin()) {
-            return $user->isUser();
-        }
-
-        return false;
-    }
-
-    
     public function getFullNameAttribute(): string
     {
         return $this->first_name . ' ' . $this->last_name;
@@ -125,27 +91,22 @@ public function favoriteBooks()
                 ->withTimestamps();
 }
 
-/**
- * User interaction relationships
- */
-public function userRatings()
-{
-    return $this->hasMany(UserRating::class);
-}
-
-public function userReviews()
-{
-    return $this->hasMany(UserReview::class);
-}
-
-public function userWishlists()
-{
-    return $this->hasMany(UserWishlist::class);
-}
-
-public function wishlistBooks()
+// Wishlist relationship
+public function wishlist()
 {
     return $this->belongsToMany(Book::class, 'user_wishlists')->withTimestamps();
+}
+
+// Ratings relationship
+public function ratings()
+{
+    return $this->hasMany(\App\Models\UserRating::class);
+}
+
+// Reviews relationship
+public function reviews()
+{
+    return $this->hasMany(\App\Models\UserReview::class);
 }
 
 
@@ -161,21 +122,6 @@ public function hasRead(Book $book): bool
                 ->where('book_id', $book->id)
                 ->where('status', ReadingStatus::STATUS_FINISHED_READING)
                 ->exists();
-}
-
-public function hasRatedBook(Book $book): bool
-{
-    return $this->userRatings()->where('book_id', $book->id)->exists();
-}
-
-public function hasReviewedBook(Book $book): bool
-{
-    return $this->userReviews()->where('book_id', $book->id)->exists();
-}
-
-public function isBookInWishlist(Book $book): bool
-{
-    return $this->userWishlists()->where('book_id', $book->id)->exists();
 }
 
 

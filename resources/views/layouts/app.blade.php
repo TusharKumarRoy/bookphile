@@ -22,8 +22,13 @@
                 <div class="max-w-7xl mx-auto px-4">
                     <div class="flex justify-between items-center h-16">
                         <div class="flex items-center">
-                            <a href="{{ route('home') }}" class="text-xl font-bold text-blue-600">
-                                BookTracker
+                            <a href="{{ route('home') }}" class="flex items-center text-xl font-bold text-blue-600">
+                                <div class="w-8 h-8 mr-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                Bookphile
                             </a>
                         </div>
                         
@@ -35,7 +40,7 @@
                         
                         <div class="flex items-center space-x-4">
                             @auth
-                                <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-blue-600">My Books</a>
+                                <a href="{{ route('users.show', auth()->user()) }}" class="text-gray-700 hover:text-blue-600">Dashboard</a>
                                 @if(auth()->user()->role === 'admin')
                                     <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-blue-600">Admin</a>
                                 @endif
@@ -72,7 +77,7 @@
 
                 <!-- Page Content -->
                 <main>
-                    {{ $slot }}
+                    @yield('content')
                 </main>
             </div>
         @endif
