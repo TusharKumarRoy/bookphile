@@ -54,14 +54,18 @@
         @if($authors->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 @foreach($authors as $author)
-                    <div class="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                    <div class="bg-white rounded-lg shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
                         <a href="{{ route('authors.show', $author) }}" class="block">
                             <div class="p-6">
                                 <!-- Author Avatar -->
                                 <div class="flex items-center mb-4">
-                                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                        {{ strtoupper(substr($author->first_name, 0, 1) . substr($author->last_name, 0, 1)) }}
-                                    </div>
+                                    @if($author->image)
+                                        <img class="w-16 h-16 rounded-full object-cover" src="{{ $author->image }}" alt="{{ $author->getFullNameAttribute() }}" loading="lazy" decoding="async">
+                                    @else
+                                        <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                            {{ strtoupper(substr($author->first_name, 0, 1) . substr($author->last_name, 0, 1)) }}
+                                        </div>
+                                    @endif
                                     <div class="ml-4 flex-1">
                                         <h3 class="font-semibold text-gray-900 text-lg">{{ $author->getFullNameAttribute() }}</h3>
                                         <p class="text-gray-600 text-sm">

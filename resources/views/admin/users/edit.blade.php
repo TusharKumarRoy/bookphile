@@ -5,9 +5,6 @@
 @section('content')
 <div class="mb-8">
     <div class="flex items-center">
-        <a href="{{ route('admin.users.show', $user) }}" class="text-blue-600 hover:text-blue-500 mr-4">
-            ← Back to User
-        </a>
         <h2 class="text-2xl font-bold text-gray-900">Edit {{ $user->getFullNameAttribute() }}</h2>
     </div>
 </div>
@@ -19,6 +16,24 @@
             @method('PUT')
             
             <div class="grid grid-cols-1 gap-6">
+                <!-- Profile Image Display -->
+                <div class="flex items-center space-x-6">
+                    <div class="flex-shrink-0">
+                        @if($user->profile_image)
+                            <img class="h-20 w-20 rounded-full object-cover" src="{{ asset('storage/' . $user->profile_image) }}" alt="{{ $user->getFullNameAttribute() }}" loading="lazy" decoding="async">
+                        @else
+                            <div class="h-20 w-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                                <span class="text-2xl font-semibold text-white">{{ strtoupper(substr($user->first_name, 0, 1)) }}</span>
+                            </div>
+                        @endif
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900">{{ $user->getFullNameAttribute() }}</h3>
+                        <p class="text-sm text-gray-500">{{ $user->email }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Profile image can be changed by the user in their profile settings</p>
+                    </div>
+                </div>
+                
                 <!-- Basic Information -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -129,11 +144,11 @@
             <!-- Form Actions -->
             <div class="mt-6 flex items-center justify-end space-x-4">
                 <a href="{{ route('admin.users.show', $user) }}" 
-                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                   class="inline-flex items-center px-4 py-2 border border-black bg-white text-black shadow-sm text-sm font-medium rounded-md hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                     Cancel
                 </a>
                 <button type="submit" 
-                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        class="inline-flex items-center px-4 py-2 border border-black bg-white text-black shadow-sm text-sm font-medium rounded-md hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                     Update User
                 </button>
             </div>

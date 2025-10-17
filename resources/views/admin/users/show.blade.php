@@ -6,23 +6,25 @@
 <div class="mb-8">
     <div class="flex items-center justify-between">
         <div class="flex items-center">
-            <a href="{{ route('admin.users.index') }}" class="text-blue-600 hover:text-blue-500 mr-4">
-                ← Back to Users
-            </a>
             <h2 class="text-2xl font-bold text-gray-900">{{ $user->getFullNameAttribute() }}</h2>
         </div>
         <div class="flex items-center space-x-4">
             @if(auth()->user()->isMasterAdmin() && auth()->user()->canManageUser($user))
-                <a href="{{ route('admin.users.edit', $user) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('admin.users.edit', $user) }}" class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                     Edit User
                 </a>
             @endif
+            <a href="{{ route('users.show', $user) }}" 
+               class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200" 
+               target="_blank">
+                View Public Page
+            </a>
             @if(auth()->user()->canManageUser($user))
                 <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" 
-                            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                            class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200"
                             onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
                         Delete User
                     </button>
@@ -39,7 +41,7 @@
             <!-- Profile Photo -->
             <div class="aspect-square bg-gray-100">
                 @if($user->profile_image)
-                    <img src="{{ $user->profile_image }}" alt="{{ $user->getFullNameAttribute() }}" class="w-full h-full object-cover">
+                    <img src="{{ asset('storage/' . $user->profile_image) }}" alt="{{ $user->getFullNameAttribute() }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
                 @else
                     <div class="w-full h-full bg-gradient-to-br from-indigo-400 to-purple-600 flex items-center justify-center">
                         <span class="text-white text-6xl font-bold">{{ strtoupper(substr($user->first_name, 0, 1)) }}</span>

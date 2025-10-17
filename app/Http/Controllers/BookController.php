@@ -31,6 +31,13 @@ class BookController extends Controller
             });
         }
         
+        // Filter by author
+        if ($authorId = $request->get('author')) {
+            $query->whereHas('authors', function($q) use ($authorId) {
+                $q->where('authors.id', $authorId);
+            });
+        }
+        
         // Sort options
         $sort = $request->get('sort', 'title');
         switch ($sort) {
@@ -49,8 +56,11 @@ class BookController extends Controller
         
         $books = $query->paginate(12);
         $genres = Genre::orderBy('name')->get();
+        $authors = Author::all()->sortBy(function($author) {
+            return $author->getFullNameAttribute();
+        });
         
-        return view('books.index', compact('books', 'genres'));
+        return view('books.index', compact('books', 'genres', 'authors'));
     }
     
     public function show(Book $book)

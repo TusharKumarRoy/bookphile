@@ -8,26 +8,68 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $query = User::withCount(['readingStatuses']);
         
-        // Regular admins can only see regular users
-        if (auth()->user()->isRegularAdmin()) {
-            $query->where('role', 'user')->orWhereNull('role');
+        // All admins can see all user types (no restriction by default)
+        // Permissions are handled in the view and actions
+        
+        // Search by name or email
+        if ($search = $request->get('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
         }
         
-        $users = $query->latest()->paginate(20);
+        // Filter by user type/role
+        if ($role = $request->get('role')) {
+            if ($role === 'user') {
+                $query->where(function($q) {
+                    $q->where('role', 'user')->orWhereNull('role');
+                });
+            } else {
+                $query->where('role', $role);
+            }
+        }
         
-        return view('admin.users.index', compact('users'));
+        // Sort options
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'name':
+                $query->orderBy('first_name')->orderBy('last_name');
+                break;
+            case 'email':
+                $query->orderBy('email');
+                break;
+            case 'oldest':
+                $query->oldest();
+                break;
+            default:
+                $query->latest();
+        }
+        
+        $users = $query->paginate(20);
+        
+        // Calculate statistics for cards - all admins see all statistics
+        $stats = [
+            'total_users' => User::count(),
+            'master_admins' => User::where('role', 'master_admin')->count(),
+            'admins' => User::where('role', 'admin')->count(),
+            'regular_users' => User::where(function($q) {
+                $q->where('role', 'user')->orWhereNull('role');
+            })->count(),
+        ];
+        
+        return view('admin.users.index', compact('users', 'stats'));
     }
 
     public function show(User $user)
     {
-        // Check if current user can view this user
-        if (!auth()->user()->canManageUser($user) && $user->id !== auth()->id()) {
-            abort(403, 'You do not have permission to view this user.');
-        }
+        // All admins can view any user profile (viewing is not restricted)
+        // Permissions are only enforced for edit/delete operations
         
         $user->load(['readingStatuses.book']);
         
@@ -122,5 +164,60 @@ class UserController extends Controller
         return redirect()
             ->route('admin.users.show', $user)
             ->with('success', 'User created successfully!');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'selected_users' => 'required|array|min:1',
+            'selected_users.*' => 'exists:users,id',
+        ]);
+
+        $userIds = $request->input('selected_users');
+        
+        // Check permissions for each user
+        $unauthorizedUsers = [];
+        $protectedUsers = [];
+        $validUserIds = [];
+        
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+            if (!$user) continue;
+            
+            // Cannot delete yourself
+            if ($user->id === auth()->id()) {
+                $protectedUsers[] = $user->getFullNameAttribute() . ' (yourself)';
+                continue;
+            }
+            
+            // Check if current user can manage this user
+            if (!auth()->user()->canManageUser($user)) {
+                $unauthorizedUsers[] = $user->getFullNameAttribute();
+                continue;
+            }
+            
+            $validUserIds[] = $userId;
+        }
+        
+        if (!empty($unauthorizedUsers)) {
+            $usersList = implode(', ', $unauthorizedUsers);
+            return back()->with('error', "You do not have permission to delete: {$usersList}");
+        }
+        
+        if (!empty($protectedUsers)) {
+            $usersList = implode(', ', $protectedUsers);
+            return back()->with('error', "Cannot delete: {$usersList}");
+        }
+        
+        if (empty($validUserIds)) {
+            return back()->with('error', 'No valid users selected for deletion.');
+        }
+        
+        // Delete the users
+        $deletedCount = User::whereIn('id', $validUserIds)->delete();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', "Successfully deleted {$deletedCount} " . ($deletedCount === 1 ? 'user' : 'users') . '!');
     }
 }

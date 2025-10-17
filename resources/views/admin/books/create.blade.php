@@ -5,11 +5,24 @@
 @section('content')
 <div class="mb-8">
     <div class="flex items-center">
-        <a href="{{ route('admin.books.index') }}" class="text-blue-600 hover:text-blue-500 mr-4">
-            ← Back to Books
-        </a>
         <h2 class="text-2xl font-bold text-gray-900">Add New Book</h2>
     </div>
+    @if(isset($selectedGenre) && $selectedGenre)
+        <div class="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-700">
+                        This book will be added to the <strong>{{ $selectedGenre->name }}</strong> genre automatically.
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 
 <div class="bg-white shadow rounded-lg">
@@ -110,7 +123,11 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         style="height: 120px;">
                     @foreach($genres as $genre)
-                        <option value="{{ $genre->id }}" {{ collect(old('genres'))->contains($genre->id) ? 'selected' : '' }}>
+                        @php
+                            $isSelected = collect(old('genres'))->contains($genre->id) || 
+                                         (isset($selectedGenre) && $selectedGenre && $selectedGenre->id == $genre->id);
+                        @endphp
+                        <option value="{{ $genre->id }}" {{ $isSelected ? 'selected' : '' }}>
                             {{ $genre->name }}
                         </option>
                     @endforeach
@@ -124,11 +141,11 @@
 
         <div class="flex justify-end space-x-4">
             <a href="{{ route('admin.books.index') }}" 
-               class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+               class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                 Cancel
             </a>
             <button type="submit" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                 Create Book
             </button>
         </div>

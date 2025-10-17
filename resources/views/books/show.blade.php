@@ -234,16 +234,24 @@
                         <div class="flex gap-6">
                             <!-- Author Photo -->
                             <div class="flex-shrink-0">
-                                <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    {{ strtoupper(substr($author->first_name, 0, 1) . substr($author->last_name, 0, 1)) }}
-                                </div>
+                                <a href="{{ route('authors.show', $author) }}" class="block hover:opacity-80 transition-opacity">
+                                    @if($author->image)
+                                        <img class="w-20 h-20 rounded-full object-cover hover:shadow-lg transition-shadow cursor-pointer" src="{{ $author->image }}" alt="{{ $author->getFullNameAttribute() }}" loading="lazy" decoding="async">
+                                    @else
+                                        <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl hover:shadow-lg transition-shadow cursor-pointer">
+                                            {{ strtoupper(substr($author->first_name, 0, 1) . substr($author->last_name, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                </a>
                             </div>
                             
                             <!-- Author Info -->
                             <div class="flex-1">
                                 <div class="flex items-center justify-between mb-4">
                                     <div>
-                                        <h3 class="text-lg font-semibold text-gray-900">{{ $author->getFullNameAttribute() }}</h3>
+                                        <a href="{{ route('authors.show', $author) }}" class="hover:text-blue-600 transition-colors">
+                                            <h3 class="text-lg font-semibold text-gray-900 hover:text-blue-600">{{ $author->getFullNameAttribute() }}</h3>
+                                        </a>
                                         <p class="text-sm text-gray-600">{{ $author->books->count() }} books • 263 followers</p>
                                     </div>
                                     <button class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
@@ -385,7 +393,9 @@
                                         <!-- User Full Name -->
                                         <div class="mb-2">
                                             <h4 class="font-semibold text-gray-900 text-lg">
-                                                {{ $review->user->full_name }}
+                                                <a href="{{ route('users.show', $review->user) }}" class="hover:text-blue-600 transition-colors">
+                                                    {{ $review->user->full_name }}
+                                                </a>
                                                 @if($review->user_id === auth()->id())
                                                     <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2">Your Review</span>
                                                 @endif
@@ -459,7 +469,11 @@
                                             
                                             <div class="flex-1">
                                                 <!-- User Full Name -->
-                                                <p class="font-medium text-gray-900 text-base mb-1">{{ $rating->user->full_name }}</p>
+                                                <p class="font-medium text-gray-900 text-base mb-1">
+                                                    <a href="{{ route('users.show', $rating->user) }}" class="hover:text-blue-600 transition-colors">
+                                                        {{ $rating->user->full_name }}
+                                                    </a>
+                                                </p>
                                                 <!-- Date -->
                                                 <p class="text-xs text-gray-500 mb-2">{{ $rating->created_at->format('M j, Y') }}</p>
                                                 <!-- Rating -->

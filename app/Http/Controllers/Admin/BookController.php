@@ -11,21 +11,77 @@ use Illuminate\Validation\Rule;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::with(['authors', 'genres'])
-                    ->latest()
-                    ->paginate(20);
+        $query = Book::with(['authors', 'genres']);
         
-        return view('admin.books.index', compact('books'));
+        // Search by title, author, or ISBN
+        if ($search = $request->get('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('isbn', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('authors', function($authorQuery) use ($search) {
+                      $authorQuery->where('first_name', 'like', "%{$search}%")
+                                 ->orWhere('last_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        // Filter by genre
+        if ($genreId = $request->get('genre')) {
+            $query->whereHas('genres', function($q) use ($genreId) {
+                $q->where('genres.id', $genreId);
+            });
+        }
+        
+        // Filter by author
+        if ($authorId = $request->get('author')) {
+            $query->whereHas('authors', function($q) use ($authorId) {
+                $q->where('authors.id', $authorId);
+            });
+        }
+        
+        // Sort options
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'title':
+                $query->orderBy('title');
+                break;
+            case 'rating':
+                $query->orderBy('average_rating', 'desc');
+                break;
+            case 'year':
+                $query->orderBy('publication_date', 'desc');
+                break;
+            case 'pages':
+                $query->orderBy('page_count', 'desc');
+                break;
+            default:
+                $query->latest();
+        }
+        
+        $books = $query->paginate(20);
+        $genres = Genre::orderBy('name')->get();
+        $authors = Author::all()->sortBy(function($author) {
+            return $author->getFullNameAttribute();
+        });
+        
+        return view('admin.books.index', compact('books', 'genres', 'authors'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $authors = Author::orderBy('last_name')->get();
         $genres = Genre::orderBy('name')->get();
         
-        return view('admin.books.create', compact('authors', 'genres'));
+        // Get the pre-selected genre if provided
+        $selectedGenre = null;
+        if ($request->has('genre')) {
+            $selectedGenre = Genre::find($request->get('genre'));
+        }
+        
+        return view('admin.books.create', compact('authors', 'genres', 'selectedGenre'));
     }
 
     public function store(Request $request)
@@ -124,5 +180,33 @@ class BookController extends Controller
         return redirect()
             ->route('admin.books.index')
             ->with('success', 'Book deleted successfully!');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'selected_books' => 'required|array|min:1',
+            'selected_books.*' => 'exists:books,id',
+        ]);
+
+        $bookIds = $request->input('selected_books');
+        
+        // Check if any of the selected books have reading statuses
+        $booksWithStatuses = Book::whereIn('id', $bookIds)
+            ->whereHas('readingStatuses')
+            ->pluck('title')
+            ->toArray();
+
+        if (!empty($booksWithStatuses)) {
+            $booksList = implode(', ', $booksWithStatuses);
+            return back()->with('error', "Cannot delete the following books because users have added them to their lists: {$booksList}");
+        }
+
+        // Delete the books
+        $deletedCount = Book::whereIn('id', $bookIds)->delete();
+
+        return redirect()
+            ->route('admin.books.index')
+            ->with('success', "Successfully deleted {$deletedCount} " . ($deletedCount === 1 ? 'book' : 'books') . '!');
     }
 }

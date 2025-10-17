@@ -5,9 +5,6 @@
 @section('content')
 <div class="mb-8">
     <div class="flex items-center">
-        <a href="{{ route('admin.genres.index') }}" class="text-blue-600 hover:text-blue-500 mr-4">
-            ← Back to Genres
-        </a>
         <h2 class="text-2xl font-bold text-gray-900">Add New Genre</h2>
     </div>
 </div>
@@ -41,11 +38,11 @@
 
         <div class="flex justify-end space-x-4">
             <a href="{{ route('admin.genres.index') }}" 
-               class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+               class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                 Cancel
             </a>
             <button type="submit" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                 Create Genre
             </button>
         </div>

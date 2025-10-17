@@ -61,5 +61,16 @@
 
         @yield('content')
     </div>
+
+    <!-- Admin keyboard shortcuts -->
+    <script>
+        document.addEventListener('keydown', function(event) {
+            // Check for Ctrl + Alt + . (period)
+            if (event.ctrlKey && event.altKey && event.key === '.') {
+                event.preventDefault();
+                window.location.href = '{{ route('home') }}';
+            }
+        });
+    </script>
 </body>
 </html>

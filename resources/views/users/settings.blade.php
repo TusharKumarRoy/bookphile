@@ -6,18 +6,11 @@
         
         <!-- Header Section -->
         <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <div class="flex items-center justify-between mb-6">
+            <div class="mb-6">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">Profile Settings</h1>
                     <p class="text-gray-600 mt-1">Manage your account security and preferences</p>
                 </div>
-                <a href="{{ route('users.show', $user) }}" 
-                   class="inline-flex items-center px-4 py-2 bg-gray-500 text-white text-sm font-semibold rounded-lg hover:bg-gray-600 transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back to Dashboard
-                </a>
             </div>
 
             <!-- Navigation Tabs -->

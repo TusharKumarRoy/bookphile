@@ -23,10 +23,20 @@ Route::middleware('auth')->group(function () {
 // Admin routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Bulk delete routes must be defined before resource routes
+    Route::delete('authors/bulk-delete', [App\Http\Controllers\Admin\AuthorController::class, 'bulkDelete'])->name('authors.bulk-delete');
+    Route::delete('books/bulk-delete', [App\Http\Controllers\Admin\BookController::class, 'bulkDelete'])->name('books.bulk-delete');
+    Route::delete('users/bulk-delete', [App\Http\Controllers\Admin\UserController::class, 'bulkDelete'])->name('users.bulk-delete');
+    
     Route::resource('authors', App\Http\Controllers\Admin\AuthorController::class);
     Route::resource('genres', App\Http\Controllers\Admin\GenreController::class);
     Route::resource('books', App\Http\Controllers\Admin\BookController::class);
     Route::resource('users', App\Http\Controllers\Admin\UserController::class)->except(['create', 'store', 'edit', 'update']);
+    
+    // Genre-specific routes
+    Route::get('genres/{genre}/available-books', [App\Http\Controllers\Admin\GenreController::class, 'availableBooks'])->name('genres.available-books');
+    Route::post('genres/{genre}/attach-books', [App\Http\Controllers\Admin\GenreController::class, 'attachBooks'])->name('genres.attach-books');
     
     // Master admin only routes
     Route::middleware('master_admin')->group(function () {

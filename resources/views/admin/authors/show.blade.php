@@ -6,16 +6,26 @@
 <div class="mb-8">
     <div class="flex items-center justify-between">
         <div class="flex items-center">
-            <a href="{{ route('admin.authors.index') }}" class="text-blue-600 hover:text-blue-500 mr-4">
-                ← Back to Authors
-            </a>
             <h2 class="text-2xl font-bold text-gray-900">{{ $author->first_name }} {{ $author->last_name }}</h2>
         </div>
         <div class="flex items-center space-x-4">
             <a href="{{ route('admin.authors.edit', $author) }}" 
-               class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+               class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                 Edit Author
             </a>
+            <a href="{{ route('authors.show', $author) }}" 
+               class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200" 
+               target="_blank">
+                View Public Page
+            </a>
+            <form action="{{ route('admin.authors.destroy', $author) }}" method="POST" class="inline" 
+                  onsubmit="return confirm('Are you sure you want to delete this author? This action cannot be undone.')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
+                    Delete Author
+                </button>
+            </form>
         </div>
     </div>
 </div>

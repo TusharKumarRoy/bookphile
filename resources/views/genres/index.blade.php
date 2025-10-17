@@ -54,7 +54,7 @@
         @if($genres->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 @foreach($genres as $genre)
-                    <div class="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                    <div class="bg-white rounded-lg shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
                         <a href="{{ route('genres.show', $genre) }}" class="block">
                             <div class="p-6">
                                 <!-- Genre Header -->

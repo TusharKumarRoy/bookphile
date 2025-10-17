@@ -37,6 +37,7 @@
                     <form method="GET" class="flex items-center gap-2">
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         <input type="hidden" name="sort" value="{{ request('sort') }}">
+                        <input type="hidden" name="author" value="{{ request('author') }}">
                         <label class="text-sm font-medium text-gray-700">Genre:</label>
                         <select name="genre" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">All Genres</option>
@@ -48,10 +49,27 @@
                         </select>
                     </form>
                     
+                    <!-- Author Filter -->
+                    <form method="GET" class="flex items-center gap-2">
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                        <input type="hidden" name="genre" value="{{ request('genre') }}">
+                        <input type="hidden" name="sort" value="{{ request('sort') }}">
+                        <label class="text-sm font-medium text-gray-700">Author:</label>
+                        <select name="author" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Authors</option>
+                            @foreach($authors as $author)
+                                <option value="{{ $author->id }}" {{ request('author') == $author->id ? 'selected' : '' }}>
+                                    {{ $author->getFullNameAttribute() }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                    
                     <!-- Sort Options -->
                     <form method="GET" class="flex items-center gap-2">
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         <input type="hidden" name="genre" value="{{ request('genre') }}">
+                        <input type="hidden" name="author" value="{{ request('author') }}">
                         <label class="text-sm font-medium text-gray-700">Sort by:</label>
                         <select name="sort" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>Title</option>
@@ -70,7 +88,7 @@
         @if($books->count() > 0)
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-8">
                 @foreach($books as $book)
-                    <div class="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-200 overflow-hidden group">
+                    <div class="bg-white rounded-lg shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
                         <a href="{{ route('books.show', $book) }}" class="block">
                             <!-- Book Cover -->
                             <div class="aspect-[3/4] bg-gray-100 relative overflow-hidden">
@@ -87,7 +105,13 @@
                             <div class="p-4">
                                 <h3 class="font-semibold text-gray-900 text-sm mb-1 line-clamp-2">{{ $book->title }}</h3>
                                 <p class="text-gray-600 text-xs mb-2">
-                                    by {{ $book->authors->pluck('first_name', 'last_name')->map(fn($first, $last) => "$first $last")->implode(', ') }}
+                                    by 
+                                    @foreach($book->authors as $index => $author)
+                                        <a href="{{ route('authors.show', $author) }}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                            {{ $author->getFullNameAttribute() }}
+                                        </a>
+                                        @if($index < $book->authors->count() - 1), @endif
+                                    @endforeach
                                 </p>
                                 
                                 <!-- Rating -->
@@ -111,9 +135,11 @@
                                 <!-- Genres -->
                                 <div class="flex flex-wrap gap-1">
                                     @foreach($book->genres->take(2) as $genre)
-                                        <span class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
+                                        <a href="{{ route('genres.show', $genre) }}" 
+                                           onclick="event.stopPropagation()"
+                                           class="inline-block bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-800 text-xs px-2 py-1 rounded-full transition-colors duration-200">
                                             {{ $genre->name }}
-                                        </span>
+                                        </a>
                                     @endforeach
                                 </div>
                             </div>

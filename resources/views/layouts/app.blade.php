@@ -41,9 +41,6 @@
                         <div class="flex items-center space-x-4">
                             @auth
                                 <a href="{{ route('users.show', auth()->user()) }}" class="text-gray-700 hover:text-blue-600">Dashboard</a>
-                                @if(auth()->user()->role === 'admin')
-                                    <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-blue-600">Admin</a>
-                                @endif
                                 <form method="POST" action="{{ route('logout') }}" class="inline">
                                     @csrf
                                     <button type="submit" class="text-gray-700 hover:text-blue-600">Logout</button>
@@ -81,5 +78,35 @@
                 </main>
             </div>
         @endif
+
+        <!-- Global Admin Keyboard Shortcut -->
+        @auth
+            @if(auth()->user()->isAdmin())
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Global keyboard shortcut for admin dashboard (Ctrl + Alt + .)
+                        document.addEventListener('keydown', function(event) {
+                            // Check for Ctrl + Alt + . (period/dot)
+                            if (event.ctrlKey && event.altKey && event.key === '.') {
+                                event.preventDefault();
+                                
+                                // Add visual feedback
+                                const body = document.body;
+                                body.style.transition = 'opacity 0.2s ease';
+                                body.style.opacity = '0.8';
+                                
+                                // Navigate to admin dashboard
+                                setTimeout(() => {
+                                    window.location.href = '{{ route("admin.dashboard") }}';
+                                }, 100);
+                            }
+                        });
+                        
+                        // Optional: Show shortcut hint on page load (only for admins)
+                        console.log('🔑 Admin shortcut: Ctrl + Alt + . to go to Admin Dashboard');
+                    });
+                </script>
+            @endif
+        @endauth
     </body>
 </html>

@@ -79,11 +79,16 @@ class Book extends Model
     public function getCoverImageUrlAttribute(): string
     {
         if ($this->hasCoverImage()) {
+            // Check if it's already a full URL
+            if (str_starts_with($this->cover_image, 'http://') || str_starts_with($this->cover_image, 'https://')) {
+                return $this->cover_image;
+            }
+            // If it's a local file path, prepend storage path
             return asset('storage/' . $this->cover_image);
         }
         
         // Return a placeholder image
-        return asset('images/book-placeholder.jpg');
+        return asset('images/book-placeholder.svg');
     }
 
     

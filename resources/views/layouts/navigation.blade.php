@@ -37,6 +37,12 @@
                             {{ __('My Dashboard') }}
                         </x-dropdown-link>
                         
+                        @if(Auth::user()->isAdmin())
+                            <x-dropdown-link :href="route('admin.dashboard')">
+                                {{ __('Admin Dashboard') }}
+                            </x-dropdown-link>
+                        @endif
+                        
                         <x-dropdown-link :href="route('users.settings', Auth::user())">
                             {{ __('Profile Settings') }}
                         </x-dropdown-link>
@@ -90,6 +96,12 @@
                 <x-responsive-nav-link :href="route('users.show', Auth::user())">
                     {{ __('My Dashboard') }}
                 </x-responsive-nav-link>
+
+                @if(Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.dashboard')">
+                        {{ __('Admin Dashboard') }}
+                    </x-responsive-nav-link>
+                @endif
 
                 <x-responsive-nav-link :href="route('users.settings', Auth::user())">
                     {{ __('Profile Settings') }}

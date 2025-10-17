@@ -3,16 +3,6 @@
 @section('content')
 <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Back Button -->
-        <div class="mb-6">
-            <a href="{{ route('genres.index') }}" class="inline-flex items-center text-purple-600 hover:text-purple-700">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Back to Genres
-            </a>
-        </div>
-        
         <!-- Genre Header -->
         <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
             <div class="flex items-start gap-6">
@@ -76,14 +66,14 @@
             @if($books->count() > 0)
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-8">
                     @foreach($books as $book)
-                        <div class="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 overflow-hidden group">
+                        <div class="bg-white rounded-lg shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
                             <a href="{{ route('books.show', $book) }}" class="block">
                                 <!-- Book Cover -->
-                                <div class="aspect-[3/4] bg-gray-200 relative overflow-hidden">
+                                <div class="aspect-[3/4] bg-gray-100 relative overflow-hidden">
                                     @if($book->cover_image)
                                         <img src="{{ $book->cover_image }}" alt="{{ $book->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
                                     @else
-                                        <div class="w-full h-full bg-gradient-to-br from-purple-400 to-pink-600 flex items-center justify-center">
+                                        <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
                                             <span class="text-white text-xs font-bold text-center px-2">{{ $book->title }}</span>
                                         </div>
                                     @endif
@@ -93,18 +83,43 @@
                                 <div class="p-4">
                                     <h3 class="font-semibold text-gray-900 text-sm mb-1 line-clamp-2">{{ $book->title }}</h3>
                                     <p class="text-gray-600 text-xs mb-2">
-                                        by {{ $book->authors->pluck('first_name', 'last_name')->map(fn($first, $last) => "$first $last")->implode(', ') }}
+                                        by 
+                                        @foreach($book->authors as $index => $author)
+                                            <a href="{{ route('authors.show', $author) }}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                                {{ $author->getFullNameAttribute() }}
+                                            </a>
+                                            @if($index < $book->authors->count() - 1), @endif
+                                        @endforeach
                                     </p>
                                     
-                                    <!-- Publication Year -->
-                                    @if($book->publication_year)
-                                        <p class="text-gray-500 text-xs mb-2">{{ $book->publication_year }}</p>
-                                    @endif
+                                    <!-- Rating -->
+                                    <div class="flex items-center gap-1 mb-2">
+                                        <div class="flex text-yellow-400">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($book->average_rating))
+                                                    <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20">
+                                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-3 h-3 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                                    </svg>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <span class="text-xs text-gray-600">{{ number_format($book->average_rating, 1) }}</span>
+                                    </div>
                                     
-                                    <!-- Page Count -->
-                                    @if($book->page_count)
-                                        <p class="text-gray-500 text-xs">{{ $book->page_count }} pages</p>
-                                    @endif
+                                    <!-- Genres -->
+                                    <div class="flex flex-wrap gap-1">
+                                        @foreach($book->genres->take(2) as $genre)
+                                            <a href="{{ route('genres.show', $genre) }}" 
+                                               onclick="event.stopPropagation()"
+                                               class="inline-block bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-800 text-xs px-2 py-1 rounded-full transition-colors duration-200">
+                                                {{ $genre->name }}
+                                            </a>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </a>
                         </div>

@@ -5,9 +5,6 @@
 @section('content')
 <div class="mb-8">
     <div class="flex items-center">
-        <a href="{{ route('admin.users.index') }}" class="text-blue-600 hover:text-blue-500 mr-4">
-            ← Back to Users
-        </a>
         <h2 class="text-2xl font-bold text-gray-900">Create New User</h2>
     </div>
 </div>
@@ -111,11 +108,11 @@
             <!-- Form Actions -->
             <div class="mt-6 flex items-center justify-end space-x-4">
                 <a href="{{ route('admin.users.index') }}" 
-                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                   class="inline-flex items-center px-4 py-2 border border-black bg-white text-black shadow-sm text-sm font-medium rounded-md hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                     Cancel
                 </a>
                 <button type="submit" 
-                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        class="inline-flex items-center px-4 py-2 border border-black bg-white text-black shadow-sm text-sm font-medium rounded-md hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                     Create User
                 </button>
             </div>

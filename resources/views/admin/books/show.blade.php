@@ -6,21 +6,26 @@
 <div class="mb-8">
     <div class="flex items-center justify-between">
         <div class="flex items-center">
-            <a href="{{ route('admin.books.index') }}" class="text-blue-600 hover:text-blue-500 mr-4">
-                ← Back to Books
-            </a>
             <h2 class="text-2xl font-bold text-gray-900">{{ $book->title }}</h2>
         </div>
         <div class="flex items-center space-x-4">
             <a href="{{ route('admin.books.edit', $book) }}" 
-               class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+               class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                 Edit Book
             </a>
             <a href="{{ route('books.show', $book) }}" 
-               class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" 
+               class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200" 
                target="_blank">
                 View Public Page
             </a>
+            <form action="{{ route('admin.books.destroy', $book) }}" method="POST" class="inline" 
+                  onsubmit="return confirm('Are you sure you want to delete this book? This action cannot be undone.')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
+                    Delete Book
+                </button>
+            </form>
         </div>
     </div>
 </div>

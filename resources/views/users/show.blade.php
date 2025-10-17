@@ -266,7 +266,13 @@
                                                         </a>
                                                     </h3>
                                                     <p class="text-sm text-gray-600">
-                                                        by {{ $activity['data']->book->authors->map(function($author) { return $author->first_name . ' ' . $author->last_name; })->implode(', ') }}
+                                                        by 
+                                                        @foreach($activity['data']->book->authors as $index => $author)
+                                                            <a href="{{ route('authors.show', $author) }}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                                                {{ $author->first_name . ' ' . $author->last_name }}
+                                                            </a>
+                                                            @if($index < $activity['data']->book->authors->count() - 1), @endif
+                                                        @endforeach
                                                     </p>
                                                 </div>
                                                 <span class="text-xs text-gray-500">{{ $activity['created_at']->diffForHumans() }}</span>
@@ -345,7 +351,13 @@
                                                         </a>
                                                     </h3>
                                                     <p class="text-sm text-gray-600">
-                                                        by {{ $activity['data']->book->authors->map(function($author) { return $author->first_name . ' ' . $author->last_name; })->implode(', ') }}
+                                                        by 
+                                                        @foreach($activity['data']->book->authors as $index => $author)
+                                                            <a href="{{ route('authors.show', $author) }}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                                                {{ $author->first_name . ' ' . $author->last_name }}
+                                                            </a>
+                                                            @if($index < $activity['data']->book->authors->count() - 1), @endif
+                                                        @endforeach
                                                     </p>
                                                 </div>
                                                 <span class="text-xs text-gray-500">{{ $activity['created_at']->diffForHumans() }}</span>
@@ -736,8 +748,12 @@ function displayBooksInModal(books) {
     let booksHtml = '<div class="grid gap-4">';
     
     books.forEach(book => {
-        const authorsText = book.authors ? book.authors.map(author => `${author.first_name} ${author.last_name}`).join(', ') : 'Unknown Author';
-        const genresText = book.genres ? book.genres.map(genre => genre.name).join(', ') : '';
+        const authorsHtml = book.authors ? book.authors.map(author => 
+            `<a href="/authors/${author.id}" class="text-blue-600 hover:text-blue-800 transition-colors">${author.first_name} ${author.last_name}</a>`
+        ).join(', ') : 'Unknown Author';
+        const genresHtml = book.genres ? book.genres.map(genre => 
+            `<a href="/genres/${genre.slug}" class="inline-block bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-800 text-xs px-2 py-1 rounded-full transition-colors duration-200 mr-1 mb-1">${genre.name}</a>`
+        ).join('') : '';
         const coverImage = book.cover_image || '';
         const publicationYear = book.publication_date ? new Date(book.publication_date).getFullYear() : '';
         
@@ -760,9 +776,9 @@ function displayBooksInModal(books) {
                             ${book.title}
                         </a>
                     </h4>
-                    <p class="text-sm text-gray-600 mb-1">by ${authorsText}</p>
-                    ${publicationYear ? `<p class="text-xs text-gray-500 mb-1">${publicationYear}</p>` : ''}
-                    ${genresText ? `<p class="text-xs text-gray-500">${genresText}</p>` : ''}
+                    <p class="text-sm text-gray-600 mb-1">by ${authorsHtml}</p>
+                    ${publicationYear ? `<p class="text-xs text-gray-500 mb-2">${publicationYear}</p>` : ''}
+                    ${genresHtml ? `<div class="mb-2">${genresHtml}</div>` : ''}
                     ${book.description ? `<p class="text-xs text-gray-600 mt-2 line-clamp-2">${book.description.substring(0, 100)}${book.description.length > 100 ? '...' : ''}</p>` : ''}
                 </div>
             </div>
