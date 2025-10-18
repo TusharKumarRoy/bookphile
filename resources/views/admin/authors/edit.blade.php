@@ -53,58 +53,62 @@
 
             <div class="sm:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-3">Author Image</label>
-                
+
                 <!-- Current Image Preview -->
                 @if($author->image)
                     <div class="mb-4">
                         <p class="text-sm text-gray-600 mb-2">Current Image:</p>
-                        <img src="{{ $author->image_url }}" alt="Current author image" class="w-24 h-24 rounded-lg object-cover">
+                        <div class="w-24 h-32 bg-gray-100 border border-gray-300 rounded-lg overflow-hidden">
+                            <img src="{{ $author->image_url }}" alt="Current author image" class="w-full h-full object-cover"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50\' y=\'50\' font-family=\'Arial\' font-size=\'40\' fill=\'%236b7280\' text-anchor=\'middle\' dy=\'0.3em\'%3E📚%3C/text%3E%3C/svg%3E'">
+                        </div>
                     </div>
                 @endif
-                
+
                 <!-- New Image Preview -->
                 <div class="mb-4 flex justify-center">
                     <div id="image_preview_container" class="hidden">
                         <p class="text-sm text-gray-600 mb-2 text-center">New Image Preview:</p>
-                        <img id="image_preview" src="" alt="New Image Preview" class="w-48 h-48 object-cover rounded-lg border-2 border-gray-300">
+                        <img id="image_preview" src="" alt="New Image Preview" class="w-48 h-64 object-cover rounded-lg border-2 border-gray-300">
                     </div>
                 </div>
-                
-                <!-- Image Upload Options -->
-                <div class="space-y-4 border border-gray-300 rounded-lg p-4">
-                    <div>
-                        <label class="flex items-center">
-                            <input type="radio" name="image_type" value="url" class="mr-2" {{ old('image_type', 'url') === 'url' ? 'checked' : '' }} onchange="toggleImageType()">
-                            <span class="text-sm font-medium">Use Image URL</span>
+
+                <!-- Image Upload Type Selection -->
+                <div class="space-y-4">
+                    <div class="flex space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="image_type" value="url" class="form-radio text-blue-600" {{ old('image_type', 'url') === 'url' ? 'checked' : '' }} onchange="toggleImageInput()">
+                            <span class="ml-2 text-sm text-gray-700">Use Image URL</span>
                         </label>
-                        <div class="mt-2 ml-6">
-                            @php
-                                $currentImageUrl = '';
-                                if ($author->image && (str_starts_with($author->image, 'http://') || str_starts_with($author->image, 'https://'))) {
-                                    $currentImageUrl = $author->image;
-                                }
-                            @endphp
-                            <input type="url" name="image_url" id="image_url" value="{{ old('image_url', $currentImageUrl) }}"
-                                   class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                   placeholder="https://example.com/image.jpg"
-                                   onchange="previewImageUrl()">
-                        </div>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="image_type" value="file" class="form-radio text-blue-600" {{ old('image_type') === 'file' ? 'checked' : '' }} onchange="toggleImageInput()">
+                            <span class="ml-2 text-sm text-gray-700">Upload New Image File</span>
+                        </label>
                     </div>
-                    
-                    <div>
-                        <label class="flex items-center">
-                            <input type="radio" name="image_type" value="file" class="mr-2" {{ old('image_type') === 'file' ? 'checked' : '' }} onchange="toggleImageType()">
-                            <span class="text-sm font-medium">Upload Image File</span>
-                        </label>
-                        <div class="mt-2 ml-6">
-                            <input type="file" name="image_file" id="image_file" accept="image/*"
-                                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                   onchange="previewImageFile()">
-                            <p class="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
-                        </div>
+
+                    <!-- URL Input -->
+                    <div id="url_input" class="block">
+                        @php
+                            $currentImageUrl = '';
+                            if ($author->image && (str_starts_with($author->image, 'http://') || str_starts_with($author->image, 'https://'))) {
+                                $currentImageUrl = $author->image;
+                            }
+                        @endphp
+                        <input type="url" name="image_url" id="image_url" value="{{ old('image_url', $currentImageUrl) }}"
+                               placeholder="https://example.com/author-photo.jpg"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                               onchange="previewImageUrl()">
+                    </div>
+
+                    <!-- File Input -->
+                    <div id="file_input" class="hidden">
+                        <input type="file" name="image_file" id="image_file" accept="image/*"
+                               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                               onchange="previewImageFile()">
+                        <p class="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                     </div>
                 </div>
-                
+
                 @error('image_url')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -138,15 +142,29 @@
 </div>
 
 <script>
-function toggleImageType() {
+function toggleImageInput() {
     const urlRadio = document.querySelector('input[name="image_type"][value="url"]');
     const fileRadio = document.querySelector('input[name="image_type"][value="file"]');
+    const urlInput = document.getElementById('url_input');
+    const fileInput = document.getElementById('file_input');
     
     if (urlRadio.checked) {
-        document.getElementById('image_file').value = '';
+        urlInput.classList.remove('hidden');
+        urlInput.classList.add('block');
+        fileInput.classList.remove('block');
+        fileInput.classList.add('hidden');
+        // Clear file input when switching to URL
+        const fileEl = document.getElementById('image_file');
+        if (fileEl) fileEl.value = '';
         hideImagePreview();
     } else if (fileRadio.checked) {
-        document.getElementById('image_url').value = '';
+        fileInput.classList.remove('hidden');
+        fileInput.classList.add('block');
+        urlInput.classList.remove('block');
+        urlInput.classList.add('hidden');
+        // Clear URL input when switching to file
+        const urlEl = document.getElementById('image_url');
+        if (urlEl) urlEl.value = '';
         hideImagePreview();
     }
 }

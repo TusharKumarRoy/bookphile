@@ -110,16 +110,18 @@
             @if($author->books->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($author->books as $book)
-                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                            <div class="aspect-[3/4] bg-gray-100">
-                                @if($book->cover_image)
-                                    <img src="{{ $book->cover_image_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
-                                @else
-                                    <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
-                                        <span class="text-white text-xs font-bold text-center px-2">{{ $book->title }}</span>
-                                    </div>
-                                @endif
-                            </div>
+                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transform transition-transform hover:-translate-y-1 duration-200">
+                            <a href="{{ route('admin.books.show', $book) }}" class="block">
+                                <div class="aspect-[3/4] bg-gray-100">
+                                    @if($book->cover_image)
+                                        <img src="{{ $book->cover_image_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+                                            <span class="text-white text-xs font-bold text-center px-2">{{ $book->title }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </a>
                             <div class="p-4">
                                 <h4 class="font-medium text-gray-900 text-sm mb-1">
                                     <a href="{{ route('admin.books.show', $book) }}" class="hover:text-blue-600">
@@ -143,9 +145,9 @@
                                 </div>
                                 <div class="mt-2 flex flex-wrap gap-1">
                                     @foreach($book->genres->take(2) as $genre)
-                                        <span class="inline-block bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">
+                                        <a href="{{ route('admin.genres.show', $genre) }}" class="inline-block bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-800 text-xs px-2 py-1 rounded-full transition-colors duration-200">
                                             {{ $genre->name }}
-                                        </span>
+                                        </a>
                                     @endforeach
                                 </div>
                             </div>

@@ -117,7 +117,7 @@
             @if($genre->books->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($genre->books as $book)
-                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transform transition-transform hover:-translate-y-1 duration-200">
                             <a href="{{ route('admin.books.show', $book) }}" class="block">
                                 <div class="aspect-[3/4] bg-gray-100">
                                     @if($book->cover_image)
@@ -135,7 +135,11 @@
                                         {{ $book->title }}
                                     </a>
                                 </h4>
-                                <p class="text-xs text-gray-500 mb-2">by {{ $book->authors_string }}</p>
+                                <p class="text-xs text-gray-500 mb-2">by 
+                                    @foreach($book->authors as $i => $author)
+                                        <a href="{{ route('admin.authors.show', $author) }}" class="hover:text-blue-600">{{ $author->first_name }} {{ $author->last_name }}</a>@if($i < $book->authors->count()-1), @endif
+                                    @endforeach
+                                </p>
                                 @if($book->publication_date)
                                     <p class="text-xs text-gray-500 mb-2">{{ $book->publication_date->format('Y') }}</p>
                                 @endif
@@ -313,36 +317,64 @@ function loadAvailableBooks() {
         .then(response => response.json())
         .then(data => {
             if (data.books && data.books.length > 0) {
+                // base admin URLs for links
+                const adminBooksUrl = "{{ url('/admin/books') }}";
+                const adminAuthorsUrl = "{{ url('/admin/authors') }}";
+
                 let html = '';
                 data.books.forEach(book => {
+                    const bookUrl = `${adminBooksUrl}/${book.id}`;
+
+                    // Build a link to the first author (or authors) pointing to admin author show page(s)
+                    // If multiple authors, we'll link to the combined authors_string but prefer linking each author individually below.
+                    const authorSearchUrl = `${adminAuthorsUrl}?search=${encodeURIComponent(book.authors_string)}`;
+
                     html += `
-                        <div class="book-item flex items-center p-3 hover:bg-gray-50 border-b border-gray-100" data-book-title="${book.title.toLowerCase()}" data-book-author="${book.authors_string.toLowerCase()}">
+                        <div class="book-item transform transition-transform hover:-translate-y-1 duration-200 cursor-pointer flex items-center p-3 hover:bg-gray-50 border-b border-gray-100" data-book-title="${book.title.toLowerCase()}" data-book-author="${book.authors_string.toLowerCase()}">
                             <div class="flex-shrink-0">
                                 <input type="checkbox" name="book_ids[]" value="${book.id}" 
-                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" onclick="event.stopPropagation()">
                             </div>
                             <div class="ml-3 flex-1">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0">
                                         ${book.cover_image ? 
-                                            `<img src="${book.cover_image}" alt="${book.title}" class="h-10 w-8 object-cover rounded mr-3">` :
-                                            `<div class="h-10 w-8 bg-gray-300 rounded mr-3 flex items-center justify-center">
+                                            `<a href="${bookUrl}" onclick="event.stopPropagation()"><img src="${book.cover_image}" alt="${book.title}" class="h-10 w-8 object-cover rounded mr-3"></a>` :
+                                            `<a href="${bookUrl}" onclick="event.stopPropagation()"><div class="h-10 w-8 bg-gray-300 rounded mr-3 flex items-center justify-center">
                                                 <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                                                 </svg>
-                                            </div>`
+                                            </div></a>`
                                         }
                                     </div>
                                     <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">${book.title}</p>
-                                        <p class="text-xs text-gray-500">by ${book.authors_string}</p>
+                                        <p class="text-sm font-medium text-gray-900"><a href="${bookUrl}" class="hover:text-blue-600" onclick="event.stopPropagation()">${book.title}</a></p>
+                                        <p class="text-xs text-gray-500">by 
+                                            ${book.authors && book.authors.length > 0 ?
+                                                book.authors.map((a, idx) => `
+                                                    <a href="${adminAuthorsUrl}/${a.id}" class="hover:text-blue-600" onclick="event.stopPropagation()">${a.full_name}</a>${idx < book.authors.length - 1 ? ', ' : ''}
+                                                `).join('')
+                                            : `<a href="${authorSearchUrl}" class="hover:text-blue-600" onclick="event.stopPropagation()">${book.authors_string}</a>`}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     `;
                 });
+
                 container.innerHTML = html;
+
+                // After rendering, attach row click handlers so clicking a row toggles its checkbox
+                const rows = container.querySelectorAll('.book-item');
+                rows.forEach(row => {
+                    row.addEventListener('click', function() {
+                        const checkbox = this.querySelector('input[type="checkbox"]');
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                        }
+                    });
+                });
             } else {
                 container.innerHTML = '<div class="text-center text-gray-500 py-4">No books available to add to this genre.</div>';
             }

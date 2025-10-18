@@ -93,6 +93,14 @@ class GenreController extends Controller
                 'title' => $book->title,
                 'authors_string' => $book->authors_string,
                 'cover_image' => $book->cover_image,
+                'authors' => $book->authors->map(function($author) {
+                    return [
+                        'id' => $author->id,
+                        'first_name' => $author->first_name,
+                        'last_name' => $author->last_name,
+                        'full_name' => trim($author->first_name . ' ' . $author->last_name),
+                    ];
+                })->values(),
             ];
         });
 
