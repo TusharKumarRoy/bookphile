@@ -91,9 +91,11 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="w-full block text-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                        <a href="{{ route('login') }}" class="w-full block text-center px-4 py-2 border border-black text-gray-700 rounded-lg hover:bg-black hover:text-white transition-colors">
                             Login to Track This Book
                         </a>
+                        <!-- text-sm lg:text-base text-gray-700 hover:text-blue-600 border border-black rounded px-3 py-1 hover:bg-black hover:text-white transition -->
+                        
                     @endauth
                     
                     @guest
@@ -102,8 +104,8 @@
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Join Bookphile to interact with books</h3>
                             <p class="text-gray-600 mb-4">Rate books, write reviews, and manage your reading list</p>
                             <div class="space-x-3">
-                                <a href="{{ route('login') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Sign In</a>
-                                <a href="{{ route('register') }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Sign Up</a>
+                                <a href="{{ route('login') }}" class="px-4 py-2 border border-black text-gray-700 rounded-lg hover:bg-black hover:text-white transition-colors">Sign In</a>
+                                <a href="{{ route('register') }}" class="px-4 py-2 border border-black text-gray-700 rounded-lg hover:bg-black hover:text-white transition-colors">Sign Up</a>
                             </div>
                         </div>
                     @endguest
@@ -512,7 +514,7 @@
         <!-- Related Books -->
         @if($relatedBooks->count() > 0)
             <div class="mt-12">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">You might also like</h2>
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center underline underline-offset-5 decoration-3">Related Books</h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     @foreach($relatedBooks as $relatedBook)
                         <a href="{{ route('books.show', $relatedBook) }}" class="group">
