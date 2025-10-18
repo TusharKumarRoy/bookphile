@@ -3,11 +3,11 @@
 @section('content')
 <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-green-600 to-teal-700 text-white">
+    <div class="bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 py-16">
             <div class="text-center">
-                <h1 class="text-4xl font-bold mb-4">Discover Amazing Authors</h1>
-                <p class="text-xl opacity-90 mb-8">Explore authors and discover their incredible works</p>
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">Discover Amazing Authors</h1>
+                <p class="text-xl text-gray-600 mb-8">Explore authors and discover their incredible works</p>
                 
                 <!-- Search Form -->
                 <form method="GET" class="max-w-2xl mx-auto">
@@ -17,7 +17,7 @@
                             name="search" 
                             value="{{ request('search') }}"
                             placeholder="Search by author name..." 
-                            class="flex-1 px-4 py-3 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            class="flex-1 px-4 py-3 rounded-l-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         >
                         <button type="submit" class="px-8 py-3 bg-green-500 hover:bg-green-600 rounded-r-lg font-semibold transition-colors">
                             Search
@@ -37,7 +37,7 @@
                     <form method="GET" class="flex items-center gap-2">
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         <label class="text-sm font-medium text-gray-700">Sort by:</label>
-                        <select name="sort" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <select name="sort" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-green-500">
                             <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name</option>
                             <option value="books_count" {{ request('sort') == 'books_count' ? 'selected' : '' }}>Number of Books</option>
                             <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Recently Added</option>
@@ -59,13 +59,12 @@
                             <div class="p-6">
                                 <!-- Author Avatar -->
                                 <div class="flex items-center mb-4">
-                                    @if($author->image)
-                                        <img class="w-16 h-16 rounded-full object-cover" src="{{ $author->image }}" alt="{{ $author->getFullNameAttribute() }}" loading="lazy" decoding="async">
-                                    @else
-                                        <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                            {{ strtoupper(substr($author->first_name, 0, 1) . substr($author->last_name, 0, 1)) }}
-                                        </div>
-                                    @endif
+                                    <img class="w-16 h-16 rounded-full object-cover" 
+                                         src="{{ $author->image_url }}" 
+                                         alt="{{ $author->getFullNameAttribute() }}" 
+                                         loading="lazy" 
+                                         decoding="async"
+                                         onerror="this.src='https://ui-avatars.com/api/?name={{ substr($author->first_name, 0, 1) }}{{ substr($author->last_name, 0, 1) }}&color=ffffff&background=10b981&size=256'">
                                     <div class="ml-4 flex-1">
                                         <h3 class="font-semibold text-gray-900 text-lg">{{ $author->getFullNameAttribute() }}</h3>
                                         <p class="text-gray-600 text-sm">

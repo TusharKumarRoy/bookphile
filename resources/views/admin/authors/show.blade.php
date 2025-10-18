@@ -36,13 +36,11 @@
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <!-- Author Photo -->
             <div class="aspect-square bg-gray-100">
-                @if($author->image)
-                    <img src="{{ $author->image }}" alt="{{ $author->first_name }} {{ $author->last_name }}" class="w-full h-full object-cover">
-                @else
-                    <div class="w-full h-full bg-gradient-to-br from-green-400 to-blue-600 flex items-center justify-center">
-                        <span class="text-white text-6xl">👤</span>
-                    </div>
-                @endif
+                <img src="{{ $author->image_url }}" 
+                     alt="{{ $author->first_name }} {{ $author->last_name }}" 
+                     class="w-full h-full object-cover"
+                     loading="lazy"
+                     onerror="this.src='https://ui-avatars.com/api/?name={{ substr($author->first_name, 0, 1) }}{{ substr($author->last_name, 0, 1) }}&color=ffffff&background=6366f1&size=512'">
             </div>
             
             <!-- Author Details -->
@@ -115,7 +113,7 @@
                         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                             <div class="aspect-[3/4] bg-gray-100">
                                 @if($book->cover_image)
-                                    <img src="{{ $book->cover_image }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
+                                    <img src="{{ $book->cover_image_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
                                         <span class="text-white text-xs font-bold text-center px-2">{{ $book->title }}</span>

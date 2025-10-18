@@ -73,4 +73,35 @@ class Author extends Model
         $endDate = $this->death_date ?: now();
         return (int) $this->birth_date->diffInYears($endDate);
     }
+
+    /**
+     * Get the author's image URL with fallback
+     */
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->image && !empty($this->image)) {
+            // Check if it's already a full URL
+            if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+                return $this->image;
+            }
+            // If it's a local file path, prepend storage path
+            return asset('storage/' . $this->image);
+        }
+        
+        // Generate a colored avatar with initials as fallback
+        $initials = substr($this->first_name, 0, 1) . substr($this->last_name, 0, 1);
+        $colors = ['3B82F6', '10B981', 'F59E0B', 'EF4444', '8B5CF6', '06B6D4', 'F97316'];
+        $colorIndex = abs(crc32($this->full_name)) % count($colors);
+        $color = $colors[$colorIndex];
+        
+        return "https://ui-avatars.com/api/?name={$initials}&color=ffffff&background={$color}&size=256";
+    }
+
+    /**
+     * Check if author has an image
+     */
+    public function hasImage(): bool
+    {
+        return !empty($this->image);
+    }
 }

@@ -54,7 +54,7 @@ class BookController extends Controller
                 $query->orderBy('title');
         }
         
-        $books = $query->paginate(12);
+        $books = $query->get();
         $genres = Genre::orderBy('name')->get();
         $authors = Author::all()->sortBy(function($author) {
             return $author->getFullNameAttribute();

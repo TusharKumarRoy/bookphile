@@ -93,12 +93,24 @@ class BookController extends Controller
             'page_count' => 'nullable|integer|min:1',
             'publication_date' => 'nullable|date',
             'language' => 'nullable|string|max:10',
+            'image_type' => 'required|in:url,file',
             'cover_image' => 'nullable|url',
+            'cover_image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'authors' => 'required|array|min:1',
             'authors.*' => 'exists:authors,id',
             'genres' => 'required|array|min:1',
             'genres.*' => 'exists:genres,id',
         ]);
+
+        // Handle cover image based on type
+        $coverImageValue = null;
+        if ($request->input('image_type') === 'url' && $request->filled('cover_image')) {
+            $coverImageValue = $validated['cover_image'];
+        } elseif ($request->input('image_type') === 'file' && $request->hasFile('cover_image_file')) {
+            // Store the uploaded file
+            $imagePath = $request->file('cover_image_file')->store('book-covers', 'public');
+            $coverImageValue = $imagePath;
+        }
 
         $book = Book::create([
             'title' => $validated['title'],
@@ -107,7 +119,7 @@ class BookController extends Controller
             'page_count' => $validated['page_count'] ?? null,
             'publication_date' => $validated['publication_date'] ?? null,
             'language' => $validated['language'] ?? 'en',
-            'cover_image' => $validated['cover_image'] ?? null,
+            'cover_image' => $coverImageValue,
         ]);
 
         // Attach authors and genres
@@ -143,12 +155,41 @@ class BookController extends Controller
             'page_count' => 'nullable|integer|min:1',
             'publication_date' => 'nullable|date',
             'language' => 'nullable|string|max:10',
+            'image_type' => 'required|in:url,file',
             'cover_image' => 'nullable|url',
+            'cover_image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'authors' => 'required|array|min:1',
             'authors.*' => 'exists:authors,id',
             'genres' => 'required|array|min:1',
             'genres.*' => 'exists:genres,id',
         ]);
+
+        // Handle cover image based on type
+        $coverImageValue = $book->cover_image; // Keep existing image by default
+        
+        if ($request->input('image_type') === 'url') {
+            if ($request->filled('cover_image')) {
+                // Delete old file-based image if exists
+                if ($book->cover_image && !filter_var($book->cover_image, FILTER_VALIDATE_URL)) {
+                    if (file_exists(public_path('storage/' . $book->cover_image))) {
+                        unlink(public_path('storage/' . $book->cover_image));
+                    }
+                }
+                $coverImageValue = $validated['cover_image'];
+            }
+        } elseif ($request->input('image_type') === 'file') {
+            if ($request->hasFile('cover_image_file')) {
+                // Delete old file-based image if exists
+                if ($book->cover_image && !filter_var($book->cover_image, FILTER_VALIDATE_URL)) {
+                    if (file_exists(public_path('storage/' . $book->cover_image))) {
+                        unlink(public_path('storage/' . $book->cover_image));
+                    }
+                }
+                // Store new uploaded file
+                $imagePath = $request->file('cover_image_file')->store('book-covers', 'public');
+                $coverImageValue = $imagePath;
+            }
+        }
 
         $book->update([
             'title' => $validated['title'],
@@ -157,7 +198,7 @@ class BookController extends Controller
             'page_count' => $validated['page_count'] ?? null,
             'publication_date' => $validated['publication_date'] ?? null,
             'language' => $validated['language'] ?? 'en',
-            'cover_image' => $validated['cover_image'] ?? null,
+            'cover_image' => $coverImageValue,
         ]);
 
         // Sync authors and genres

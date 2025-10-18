@@ -88,7 +88,7 @@
                     @if($user->bio)
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Bio</dt>
-                            <dd class="text-sm text-gray-700 mt-1">{{ $user->bio }}</dd>
+                            <dd class="text-sm text-gray-700 mt-1 leading-relaxed">{!! nl2br(preg_replace('/(https?:\/\/[^\s]+)/', '<a href="$1" target="_blank" class="text-blue-600 hover:text-blue-800 underline">$1</a>', e($user->bio))) !!}</dd>
                         </div>
                     @endif
                 </div>
@@ -132,7 +132,7 @@
                         <div class="flex items-center p-4 border border-gray-200 rounded-lg">
                             <div class="flex-shrink-0">
                                 @if($readingStatus->book->cover_image)
-                                    <img class="h-16 w-12 object-cover rounded" src="{{ $readingStatus->book->cover_image }}" alt="{{ $readingStatus->book->title }}">
+                                    <img class="h-16 w-12 object-cover rounded" src="{{ $readingStatus->book->cover_image_url }}" alt="{{ $readingStatus->book->title }}">
                                 @else
                                     <div class="h-16 w-12 bg-gray-300 rounded flex items-center justify-center">
                                         <span class="text-xs text-gray-600">📖</span>
@@ -177,7 +177,7 @@
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
                                     @if($readingStatus->book->cover_image)
-                                        <img class="h-12 w-8 object-cover rounded" src="{{ $readingStatus->book->cover_image }}" alt="{{ $readingStatus->book->title }}">
+                                        <img class="h-12 w-8 object-cover rounded" src="{{ $readingStatus->book->cover_image_url }}" alt="{{ $readingStatus->book->title }}">
                                     @else
                                         <div class="h-12 w-8 bg-gray-300 rounded flex items-center justify-center">
                                             <span class="text-xs text-gray-600">📖</span>

@@ -173,15 +173,11 @@
                                 <a href="{{ route('admin.authors.show', $author) }}" 
                                    onclick="event.stopPropagation()" 
                                    class="block">
-                                    @if($author->image)
-                                        <img class="h-12 w-12 rounded-full object-cover hover:opacity-80 transition-opacity cursor-pointer" 
-                                             src="{{ $author->image }}" 
-                                             alt="{{ $author->first_name }} {{ $author->last_name }}">
-                                    @else
-                                        <div class="h-12 w-12 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 transition-colors cursor-pointer">
-                                            <span class="text-lg text-gray-600">👤</span>
-                                        </div>
-                                    @endif
+                                    <img class="h-12 w-12 rounded-full object-cover hover:opacity-80 transition-opacity cursor-pointer" 
+                                         src="{{ $author->image_url }}" 
+                                         alt="{{ $author->first_name }} {{ $author->last_name }}"
+                                         loading="lazy"
+                                         onerror="this.src='https://ui-avatars.com/api/?name={{ substr($author->first_name, 0, 1) }}{{ substr($author->last_name, 0, 1) }}&color=ffffff&background=6366f1&size=256'">
                                 </a>
                             </div>
                             

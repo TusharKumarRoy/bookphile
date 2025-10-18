@@ -8,13 +8,12 @@
             <div class="flex flex-col md:flex-row md:items-start gap-8">
                 <!-- Author Avatar -->
                 <div class="flex-shrink-0">
-                    @if($author->image)
-                        <img class="w-32 h-32 rounded-full object-cover" src="{{ $author->image }}" alt="{{ $author->getFullNameAttribute() }}" loading="lazy" decoding="async">
-                    @else
-                        <div class="w-32 h-32 bg-gradient-to-br from-green-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-4xl">
-                            {{ strtoupper(substr($author->first_name, 0, 1) . substr($author->last_name, 0, 1)) }}
-                        </div>
-                    @endif
+                    <img class="w-32 h-32 rounded-full object-cover" 
+                         src="{{ $author->image_url }}" 
+                         alt="{{ $author->getFullNameAttribute() }}" 
+                         loading="lazy" 
+                         decoding="async"
+                         onerror="this.src='https://ui-avatars.com/api/?name={{ substr($author->first_name, 0, 1) }}{{ substr($author->last_name, 0, 1) }}&color=ffffff&background=10b981&size=512'">
                 </div>
                 
                 <!-- Author Info -->
@@ -93,10 +92,13 @@
                                 <!-- Book Cover -->
                                 <div class="aspect-[3/4] bg-gray-100 relative overflow-hidden">
                                     @if($book->cover_image)
-                                        <img src="{{ $book->cover_image }}" alt="{{ $book->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                                        <img src="{{ $book->cover_image_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
                                     @else
-                                        <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
-                                            <span class="text-white text-xs font-bold text-center px-2">{{ $book->title }}</span>
+                                        <div class="w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                            <div class="text-center px-3">
+                                                <div class="text-gray-400 mb-2">📚</div>
+                                                <span class="text-gray-600 text-xs font-medium text-center leading-tight">{{ $book->title }}</span>
+                                            </div>
                                         </div>
                                     @endif
                                 </div>

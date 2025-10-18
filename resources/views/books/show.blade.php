@@ -27,7 +27,7 @@
                     <!-- Book Cover -->
                     <div class="aspect-[3/4] bg-gray-100 relative mb-6 rounded-lg overflow-hidden">
                         @if($book->cover_image)
-                            <img src="{{ $book->cover_image }}" alt="{{ $book->title }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                            <img src="{{ $book->cover_image_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
                         @else
                             <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
                                 <span class="text-white text-lg font-bold text-center px-4">{{ $book->title }}</span>
@@ -235,28 +235,22 @@
                             <!-- Author Photo -->
                             <div class="flex-shrink-0">
                                 <a href="{{ route('authors.show', $author) }}" class="block hover:opacity-80 transition-opacity">
-                                    @if($author->image)
-                                        <img class="w-20 h-20 rounded-full object-cover hover:shadow-lg transition-shadow cursor-pointer" src="{{ $author->image }}" alt="{{ $author->getFullNameAttribute() }}" loading="lazy" decoding="async">
-                                    @else
-                                        <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl hover:shadow-lg transition-shadow cursor-pointer">
-                                            {{ strtoupper(substr($author->first_name, 0, 1) . substr($author->last_name, 0, 1)) }}
-                                        </div>
-                                    @endif
+                                    <img class="w-20 h-20 rounded-full object-cover hover:shadow-lg transition-shadow cursor-pointer" 
+                                         src="{{ $author->image_url }}" 
+                                         alt="{{ $author->getFullNameAttribute() }}" 
+                                         loading="lazy" 
+                                         decoding="async"
+                                         onerror="this.src='https://ui-avatars.com/api/?name={{ substr($author->first_name, 0, 1) }}{{ substr($author->last_name, 0, 1) }}&color=ffffff&background=10b981&size=512'">
                                 </a>
                             </div>
                             
                             <!-- Author Info -->
                             <div class="flex-1">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div>
-                                        <a href="{{ route('authors.show', $author) }}" class="hover:text-blue-600 transition-colors">
-                                            <h3 class="text-lg font-semibold text-gray-900 hover:text-blue-600">{{ $author->getFullNameAttribute() }}</h3>
-                                        </a>
-                                        <p class="text-sm text-gray-600">{{ $author->books->count() }} books • 263 followers</p>
-                                    </div>
-                                    <button class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                                        Follow
-                                    </button>
+                                <div class="mb-4">
+                                    <a href="{{ route('authors.show', $author) }}" class="hover:text-blue-600 transition-colors">
+                                        <h3 class="text-lg font-semibold text-gray-900 hover:text-blue-600">{{ $author->getFullNameAttribute() }}</h3>
+                                    </a>
+                                    <p class="text-sm text-gray-600">{{ $author->books->count() }} {{ Str::plural('book', $author->books->count()) }}</p>
                                 </div>
                                 
                                 @if($author->biography)
@@ -525,7 +519,7 @@
                             <div class="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-200 overflow-hidden">
                                 <div class="aspect-[3/4] bg-gray-100 relative overflow-hidden">
                                     @if($relatedBook->cover_image)
-                                        <img src="{{ $relatedBook->cover_image }}" alt="{{ $relatedBook->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" loading="lazy" decoding="async">
+                                        <img src="{{ $relatedBook->cover_image_url }}" alt="{{ $relatedBook->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" loading="lazy" decoding="async">
                                     @else
                                         <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
                                             <span class="text-white text-xs font-bold text-center px-2">{{ $relatedBook->title }}</span>

@@ -3,11 +3,11 @@
 @section('content')
 <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+    <div class="bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 py-16">
             <div class="text-center">
-                <h1 class="text-4xl font-bold mb-4">Discover Your Next Great Read</h1>
-                <p class="text-xl opacity-90 mb-8">Explore thousands of books, track your reading, and connect with fellow readers</p>
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">Discover Your Next Great Read</h1>
+                <p class="text-xl text-gray-600 mb-8">Explore thousands of books, track your reading, and connect with fellow readers</p>
                 
                 <!-- Search Form -->
                 <form method="GET" class="max-w-2xl mx-auto">
@@ -17,7 +17,7 @@
                             name="search" 
                             value="{{ request('search') }}"
                             placeholder="Search by title or author..." 
-                            class="flex-1 px-4 py-3 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            class="flex-1 px-4 py-3 rounded-l-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                         <button type="submit" class="px-8 py-3 bg-blue-500 hover:bg-blue-600 rounded-r-lg font-semibold transition-colors">
                             Search
@@ -39,7 +39,7 @@
                         <input type="hidden" name="sort" value="{{ request('sort') }}">
                         <input type="hidden" name="author" value="{{ request('author') }}">
                         <label class="text-sm font-medium text-gray-700">Genre:</label>
-                        <select name="genre" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select name="genre" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">All Genres</option>
                             @foreach($genres as $genre)
                                 <option value="{{ $genre->id }}" {{ request('genre') == $genre->id ? 'selected' : '' }}>
@@ -55,7 +55,7 @@
                         <input type="hidden" name="genre" value="{{ request('genre') }}">
                         <input type="hidden" name="sort" value="{{ request('sort') }}">
                         <label class="text-sm font-medium text-gray-700">Author:</label>
-                        <select name="author" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select name="author" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">All Authors</option>
                             @foreach($authors as $author)
                                 <option value="{{ $author->id }}" {{ request('author') == $author->id ? 'selected' : '' }}>
@@ -71,7 +71,7 @@
                         <input type="hidden" name="genre" value="{{ request('genre') }}">
                         <input type="hidden" name="author" value="{{ request('author') }}">
                         <label class="text-sm font-medium text-gray-700">Sort by:</label>
-                        <select name="sort" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select name="sort" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>Title</option>
                             <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Rating</option>
                             <option value="year" {{ request('sort') == 'year' ? 'selected' : '' }}>Publication Year</option>
@@ -80,7 +80,7 @@
                     </form>
                 </div>
                 
-                <p class="text-sm text-gray-500">{{ $books->total() }} books found</p>
+                <p class="text-sm text-gray-500">{{ $books->count() }} books found</p>
             </div>
         </div>
         
@@ -93,10 +93,13 @@
                             <!-- Book Cover -->
                             <div class="aspect-[3/4] bg-gray-100 relative overflow-hidden">
                                 @if($book->cover_image)
-                                    <img src="{{ $book->cover_image }}" alt="{{ $book->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                                    <img src="{{ $book->cover_image_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
                                 @else
-                                    <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
-                                        <span class="text-white text-xs font-bold text-center px-2">{{ $book->title }}</span>
+                                    <div class="w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                        <div class="text-center px-3">
+                                            <div class="text-gray-400 mb-2">📚</div>
+                                            <span class="text-gray-600 text-xs font-medium text-center leading-tight">{{ $book->title }}</span>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
@@ -147,9 +150,6 @@
                     </div>
                 @endforeach
             </div>
-            
-            <!-- Pagination -->
-            {{ $books->links() }}
         @else
             <div class="text-center py-16">
                 <div class="text-gray-500 text-xl mb-4">No books found</div>

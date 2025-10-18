@@ -76,10 +76,29 @@ class AuthorController extends Controller
             'biography' => 'nullable|string',
             'birth_date' => 'nullable|date|before:today',
             'death_date' => 'nullable|date|after:birth_date',
-            'image' => 'nullable|url|max:2048',
+            'image_type' => 'required|in:url,file',
+            'image_url' => 'nullable|url|max:2048',
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Author::create($validated);
+        // Handle image based on type
+        $imageValue = null;
+        if ($request->input('image_type') === 'url' && $request->filled('image_url')) {
+            $imageValue = $validated['image_url'];
+        } elseif ($request->input('image_type') === 'file' && $request->hasFile('image_file')) {
+            // Store the uploaded file
+            $imagePath = $request->file('image_file')->store('author-images', 'public');
+            $imageValue = $imagePath;
+        }
+
+        Author::create([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'biography' => $validated['biography'] ?? null,
+            'birth_date' => $validated['birth_date'] ?? null,
+            'death_date' => $validated['death_date'] ?? null,
+            'image' => $imageValue,
+        ]);
 
         return redirect()
             ->route('admin.authors.index')
@@ -105,10 +124,46 @@ class AuthorController extends Controller
             'biography' => 'nullable|string',
             'birth_date' => 'nullable|date|before:today',
             'death_date' => 'nullable|date|after:birth_date',
-            'image' => 'nullable|url|max:2048',
+            'image_type' => 'required|in:url,file',
+            'image_url' => 'nullable|url|max:2048',
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $author->update($validated);
+        // Handle image based on type
+        $imageValue = $author->image; // Keep existing image by default
+        
+        if ($request->input('image_type') === 'url') {
+            if ($request->filled('image_url')) {
+                // Delete old file-based image if exists
+                if ($author->image && !filter_var($author->image, FILTER_VALIDATE_URL)) {
+                    if (file_exists(public_path('storage/' . $author->image))) {
+                        unlink(public_path('storage/' . $author->image));
+                    }
+                }
+                $imageValue = $validated['image_url'];
+            }
+        } elseif ($request->input('image_type') === 'file') {
+            if ($request->hasFile('image_file')) {
+                // Delete old file-based image if exists
+                if ($author->image && !filter_var($author->image, FILTER_VALIDATE_URL)) {
+                    if (file_exists(public_path('storage/' . $author->image))) {
+                        unlink(public_path('storage/' . $author->image));
+                    }
+                }
+                // Store new uploaded file
+                $imagePath = $request->file('image_file')->store('author-images', 'public');
+                $imageValue = $imagePath;
+            }
+        }
+
+        $author->update([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'biography' => $validated['biography'] ?? null,
+            'birth_date' => $validated['birth_date'] ?? null,
+            'death_date' => $validated['death_date'] ?? null,
+            'image' => $imageValue,
+        ]);
 
         return redirect()
             ->route('admin.authors.index')

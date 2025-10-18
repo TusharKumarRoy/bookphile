@@ -6,11 +6,12 @@
 <div class="mb-8">
     <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
-        @if(auth()->user()->isMasterAdmin())
+      <!--  @if(auth()->user()->isMasterAdmin())
             <a href="{{ route('admin.users.create') }}" class="border border-black bg-white text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white hover:-translate-y-0.5 transition-all duration-200">
                 Create Admin User
             </a>
         @endif
+     -->
     </div>
 </div>
 

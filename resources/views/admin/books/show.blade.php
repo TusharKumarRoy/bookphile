@@ -37,7 +37,7 @@
             <!-- Cover Image -->
             <div class="aspect-[3/4] bg-gray-100">
                 @if($book->cover_image)
-                    <img src="{{ $book->cover_image }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
+                    <img src="{{ $book->cover_image_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
                 @else
                     <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
                         <span class="text-white text-lg font-bold text-center px-4">{{ $book->title }}</span>
@@ -95,13 +95,11 @@
                 @foreach($book->authors as $author)
                     <div class="flex items-center p-4 border border-gray-200 rounded-lg">
                         <div class="flex-shrink-0">
-                            @if($author->image)
-                                <img class="h-12 w-12 rounded-full object-cover" src="{{ $author->image }}" alt="{{ $author->first_name }} {{ $author->last_name }}">
-                            @else
-                                <div class="h-12 w-12 bg-gray-300 rounded-full flex items-center justify-center">
-                                    <span class="text-lg text-gray-600">👤</span>
-                                </div>
-                            @endif
+                            <img class="h-12 w-12 rounded-full object-cover" 
+                                 src="{{ $author->image_url }}" 
+                                 alt="{{ $author->first_name }} {{ $author->last_name }}"
+                                 loading="lazy"
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ substr($author->first_name, 0, 1) }}{{ substr($author->last_name, 0, 1) }}&color=ffffff&background=8b5cf6&size=256'">
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-900">

@@ -8,8 +8,8 @@
             <div class="flex items-start gap-6">
                 <!-- Genre Icon -->
                 <div class="flex-shrink-0">
-                    <div class="w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-3xl">{{ strtoupper(substr($genre->name, 0, 2)) }}</span>
+                    <div class="w-24 h-24 bg-gray-100 border-2 border-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-600 font-bold text-3xl">{{ strtoupper(substr($genre->name, 0, 2)) }}</span>
                     </div>
                 </div>
                 
@@ -71,10 +71,13 @@
                                 <!-- Book Cover -->
                                 <div class="aspect-[3/4] bg-gray-100 relative overflow-hidden">
                                     @if($book->cover_image)
-                                        <img src="{{ $book->cover_image }}" alt="{{ $book->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                                        <img src="{{ $book->cover_image_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
                                     @else
-                                        <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
-                                            <span class="text-white text-xs font-bold text-center px-2">{{ $book->title }}</span>
+                                        <div class="w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                            <div class="text-center px-3">
+                                                <div class="text-gray-400 mb-2">📚</div>
+                                                <span class="text-gray-600 text-xs font-medium text-center leading-tight">{{ $book->title }}</span>
+                                            </div>
                                         </div>
                                     @endif
                                 </div>

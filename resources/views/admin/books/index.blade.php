@@ -194,7 +194,7 @@
                                    onclick="event.stopPropagation()" 
                                    class="block">
                                     @if($book->cover_image)
-                                        <img class="h-12 w-8 object-cover rounded hover:opacity-80 transition-opacity cursor-pointer" src="{{ $book->cover_image }}" alt="{{ $book->title }}">
+                                        <img class="h-12 w-8 object-cover rounded hover:opacity-80 transition-opacity cursor-pointer" src="{{ $book->cover_image_url }}" alt="{{ $book->title }}">
                                     @else
                                         <div class="h-12 w-8 bg-gray-300 rounded flex items-center justify-center hover:bg-gray-400 transition-colors cursor-pointer">
                                             <span class="text-xs text-gray-600">📖</span>

@@ -18,36 +18,60 @@
         <!-- Check if this is a book page or regular Breeze page -->
         @if(request()->routeIs('books.*') || request()->routeIs('authors.*') || request()->routeIs('genres.*') || request()->routeIs('home'))
             <!-- Custom navigation for book pages -->
-            <nav class="bg-white shadow-sm border-b border-gray-200">
+            <nav class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 w-full z-50">
                 <div class="max-w-7xl mx-auto px-4">
                     <div class="flex justify-between items-center h-16">
                         <div class="flex items-center">
-                            <a href="{{ route('home') }}" class="flex items-center text-xl font-bold text-blue-600">
-                                <div class="w-8 h-8 mr-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
-                                Bookphile
+                            <a href="{{ route('home') }}" class="flex items-center">
+                                <img src="{{ asset('images/bookphile_logo.png') }}" alt="Bookphile Logo" class="h-10 w-auto object-contain">
                             </a>
                         </div>
                         
-                        <div class="hidden md:flex items-center space-x-8">
-                            <a href="{{ route('books.index') }}" class="text-gray-700 hover:text-blue-600">Books</a>
-                            <a href="{{ route('authors.index') }}" class="text-gray-700 hover:text-blue-600">Authors</a>
-                            <a href="{{ route('genres.index') }}" class="text-gray-700 hover:text-blue-600">Genres</a>
+                        <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                            <a href="{{ route('books.index') }}" class="px-3 py-2 rounded-md text-sm font-medium border border-black {{ request()->routeIs('books.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'  }}">Books</a>
+                            <a href="{{ route('authors.index') }}" class="px-3 py-2 rounded-md text-sm font-medium border border-black {{ request()->routeIs('authors.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}">Authors</a>
+                            <a href="{{ route('genres.index') }}" class="px-3 py-2 rounded-md text-sm font-medium border border-black {{ request()->routeIs('genres.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}">Genres</a>
                         </div>
                         
-                        <div class="flex items-center space-x-4">
+                        <div class="hidden md:flex items-center space-x-2 sm:space-x-4">
                             @auth
-                                <a href="{{ route('users.show', auth()->user()) }}" class="text-gray-700 hover:text-blue-600">Dashboard</a>
+                                <a href="{{ route('users.show', auth()->user()) }}" class="text-sm lg:text-base text-gray-700 hover:text-blue-600 border border-black rounded px-3 py-1 hover:bg-black hover:text-white transition">Dashboard</a>
                                 <form method="POST" action="{{ route('logout') }}" class="inline">
                                     @csrf
-                                    <button type="submit" class="text-gray-700 hover:text-blue-600">Logout</button>
+                                    <button type="submit" class="text-sm lg:text-base text-gray-700 hover:text-blue-600 border border-black rounded px-3 py-1 hover:bg-black hover:text-white transition">Logout</button>
                                 </form>
                             @else
-                                <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600">Login</a>
-                                <a href="{{ route('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">Sign Up</a>
+                                <a href="{{ route('login') }}" class="text-sm lg:text-base text-gray-700 hover:text-blue-600 border border-black rounded px-3 py-1 hover:bg-black hover:text-white transition">Login</a>
+                                <a href="{{ route('register') }}" class="text-sm lg:text-base text-gray-700 hover:text-blue-600 border border-black rounded px-3 py-1 hover:bg-black hover:text-white transition">Sign Up</a>
+                            @endauth
+                        </div>
+                        
+                        <!-- Mobile Menu Button -->
+                        <div class="md:hidden flex items-center">
+                            <button id="mobile-menu-btn" type="button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Menu -->
+                    <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-gray-200 mt-2 pt-4">
+                        <div class="flex flex-col space-y-3">
+                            <a href="{{ route('books.index') }}" class="text-gray-700 hover:text-blue-600 px-2 py-1">Books</a>
+                            <a href="{{ route('authors.index') }}" class="text-gray-700 hover:text-blue-600 px-2 py-1">Authors</a>
+                            <a href="{{ route('genres.index') }}" class="text-gray-700 hover:text-blue-600 px-2 py-1">Genres</a>
+                            <div class="border-t border-gray-200 my-2"></div>
+                            @auth
+                                <a href="{{ route('users.show', auth()->user()) }}" class="text-gray-700 hover:text-blue-600 px-2 py-1">Dashboard</a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="text-gray-700 hover:text-blue-600 w-full text-left px-2 py-1">Logout</button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 px-2 py-1">Login</a>
+                                <a href="{{ route('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-center">Sign Up</a>
                             @endauth
                         </div>
                     </div>
@@ -58,6 +82,14 @@
             <main>
                 @yield('content')
             </main>
+            
+            <!-- Mobile Menu Script -->
+            <script>
+                document.getElementById('mobile-menu-btn')?.addEventListener('click', function() {
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    mobileMenu.classList.toggle('hidden');
+                });
+            </script>
         @else
             <!-- Original Breeze layout for dashboard, profile, etc. -->
             <div class="min-h-screen bg-gray-100">

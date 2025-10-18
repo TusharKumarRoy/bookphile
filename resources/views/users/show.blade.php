@@ -102,8 +102,8 @@
                                      alt="{{ $user->full_name }}" 
                                      class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                                    <span class="text-white font-bold text-4xl">
+                                <div class="w-full h-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center">
+                                    <span class="text-gray-600 font-bold text-4xl">
                                         {{ strtoupper(substr($user->full_name, 0, 1)) }}
                                     </span>
                                 </div>
@@ -243,14 +243,17 @@
                                             <a href="{{ route('books.show', $activity['data']->book) }}" 
                                                class="block w-16 h-20 bg-gray-100 rounded-lg overflow-hidden hover:opacity-80 transition-opacity cursor-pointer">
                                                 @if($activity['data']->book->cover_image)
-                                                    <img src="{{ $activity['data']->book->cover_image }}" 
+                                                    <img src="{{ $activity['data']->book->cover_image_url }}" 
                                                          alt="{{ $activity['data']->book->title }}" 
                                                          class="w-full h-full object-cover">
                                                 @else
-                                                    <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
-                                                        <span class="text-white text-xs font-bold text-center px-1">
-                                                            {{ Str::limit($activity['data']->book->title, 15) }}
-                                                        </span>
+                                                    <div class="w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                                        <div class="text-center px-1">
+                                                            <div class="text-gray-400 text-xs mb-1">📚</div>
+                                                            <span class="text-gray-600 text-xs font-medium text-center leading-tight">
+                                                                {{ Str::limit($activity['data']->book->title, 15) }}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 @endif
                                             </a>
@@ -328,14 +331,17 @@
                                             <a href="{{ route('books.show', $activity['data']->book) }}" 
                                                class="block w-16 h-20 bg-gray-100 rounded-lg overflow-hidden hover:opacity-80 transition-opacity cursor-pointer">
                                                 @if($activity['data']->book->cover_image)
-                                                    <img src="{{ $activity['data']->book->cover_image }}" 
+                                                    <img src="{{ $activity['data']->book->cover_image_url }}" 
                                                          alt="{{ $activity['data']->book->title }}" 
                                                          class="w-full h-full object-cover">
                                                 @else
-                                                    <div class="w-full h-full bg-gradient-to-br from-green-400 to-blue-600 flex items-center justify-center">
-                                                        <span class="text-white text-xs font-bold text-center px-1">
-                                                            {{ Str::limit($activity['data']->book->title, 15) }}
-                                                        </span>
+                                                    <div class="w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                                        <div class="text-center px-1">
+                                                            <div class="text-gray-400 text-xs mb-1">📚</div>
+                                                            <span class="text-gray-600 text-xs font-medium text-center leading-tight">
+                                                                {{ Str::limit($activity['data']->book->title, 15) }}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 @endif
                                             </a>
@@ -483,14 +489,14 @@
                     <!-- Profile Image Section -->
                     <div class="flex items-start space-x-6">
                         <div class="flex-shrink-0">
-                            <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center overflow-hidden">
+                            <div class="w-24 h-24 bg-gray-100 border-2 border-gray-300 rounded-full flex items-center justify-center overflow-hidden">
                                 @if($user->profile_image)
                                     <img src="{{ asset('storage/' . $user->profile_image) }}" 
                                          alt="{{ $user->full_name }}" 
                                          class="w-full h-full object-cover"
                                          id="modal-profile-preview">
                                 @else
-                                    <span class="text-white text-2xl font-bold" id="modal-profile-initials">
+                                    <span class="text-gray-600 text-2xl font-bold" id="modal-profile-initials">
                                         {{ strtoupper(substr($user->first_name, 0, 1) . substr($user->last_name, 0, 1)) }}
                                     </span>
                                 @endif
@@ -763,8 +769,11 @@ function displayBooksInModal(books) {
                     <a href="/books/${book.id}" class="block w-16 h-20 bg-gray-100 rounded-lg overflow-hidden hover:opacity-80 transition-opacity cursor-pointer">
                         ${coverImage ? 
                             `<img src="${coverImage}" alt="${book.title}" class="w-full h-full object-cover">` :
-                            `<div class="w-full h-full bg-gradient-to-br from-green-400 to-blue-600 flex items-center justify-center">
-                                <span class="text-white text-xs font-bold text-center px-1">${book.title.substring(0, 15)}</span>
+                            `<div class="w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                                <div class="text-center px-1">
+                                    <div class="text-gray-400 text-xs mb-1">📚</div>
+                                    <span class="text-gray-600 text-xs font-medium text-center leading-tight">${book.title.substring(0, 15)}</span>
+                                </div>
                             </div>`
                         }
                     </a>
