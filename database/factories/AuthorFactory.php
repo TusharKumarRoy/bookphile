@@ -15,7 +15,7 @@ class AuthorFactory extends Factory
             'birth_date' => fake()->dateTimeBetween('-100 years', '-30 years')->format('Y-m-d'),
             'death_date' => fake()->optional(0.3)->dateTimeBetween('-30 years', 'now')?->format('Y-m-d'),
             'nationality' => fake()->country(),
-            'image' => null, // We'll use placeholder/default images in the view instead
+            'image' => null,
         ];
     }
 }

@@ -9,11 +9,7 @@ class Author extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    
     protected $fillable = [
         'first_name',
         'last_name',
@@ -24,11 +20,7 @@ class Author extends Model
         'nationality',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    
     protected function casts(): array
     {
         return [
@@ -37,33 +29,25 @@ class Author extends Model
         ];
     }
 
-    /**
-     * Get books by this author
-     */
+    
     public function books()
     {
         return $this->belongsToMany(Book::class)->withTimestamps();
     }
 
-    /**
-     * Get the author's full name
-     */
+    
     public function getFullNameAttribute(): string
     {
         return trim($this->first_name . ' ' . $this->last_name);
     }
 
-    /**
-     * Check if author is still alive
-     */
+    
     public function isAlive(): bool
     {
         return is_null($this->death_date);
     }
 
-    /**
-     * Get author's age (if alive) or age at death
-     */
+    
     public function getAge(): ?int
     {
         if (!$this->birth_date) {
@@ -74,9 +58,7 @@ class Author extends Model
         return (int) $this->birth_date->diffInYears($endDate);
     }
 
-    /**
-     * Get the author's image URL with fallback
-     */
+    
     public function getImageUrlAttribute(): string
     {
         if ($this->image && !empty($this->image)) {
@@ -97,9 +79,7 @@ class Author extends Model
         return "https://ui-avatars.com/api/?name={$initials}&color=ffffff&background={$color}&size=256";
     }
 
-    /**
-     * Check if author has an image
-     */
+    
     public function hasImage(): bool
     {
         return !empty($this->image);

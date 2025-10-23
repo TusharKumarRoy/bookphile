@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Validator;
 
 class BookRatingController extends Controller
 {
-    /**
-     * Store or update a rating for a book.
-     */
+    // 
+    // Store or update a rating for a book.
+    
     public function store(Request $request, Book $book): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -56,9 +56,8 @@ class BookRatingController extends Controller
         ]);
     }
 
-    /**
-     * Get current user's rating for a book.
-     */
+   // Get current user's rating for a book.
+    
     public function show(Book $book): JsonResponse
     {
         $userId = Auth::id();
@@ -76,9 +75,8 @@ class BookRatingController extends Controller
         ]);
     }
 
-    /**
-     * Remove a rating for a book.
-     */
+    // Remove a rating for a book.
+   
     public function destroy(Book $book): JsonResponse
     {
         $userId = Auth::id();

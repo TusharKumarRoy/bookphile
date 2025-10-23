@@ -31,7 +31,7 @@ class BookFactory extends Factory
             'description' => fake()->paragraphs(2, true),
             'page_count' => fake()->numberBetween(150, 800),
             'publication_date' => fake()->dateTimeBetween('-30 years', 'now')->format('Y-m-d'),  
-            'cover_image' => null, // We'll use placeholder/default images in the view instead
+            'cover_image' => null,
         ];
     }
 }

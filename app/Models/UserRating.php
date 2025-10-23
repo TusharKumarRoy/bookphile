@@ -17,25 +17,21 @@ class UserRating extends Model
         'rating' => 'integer',
     ];
 
-    /**
-     * Get the user that owns the rating.
-     */
+    // Get the user that owns the rating.
+     
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the book that was rated.
-     */
+    // Get the book that was rated.
+    
     public function book(): BelongsTo
     {
         return $this->belongsTo(Book::class);
     }
 
-    /**
-     * Validation rules for rating.
-     */
+    // Validation rules for rating.
     public static function rules(): array
     {
         return [

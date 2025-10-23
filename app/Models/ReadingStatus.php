@@ -10,9 +10,7 @@ class ReadingStatus extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     */
+    
     protected $fillable = [
         'user_id',
         'book_id',
@@ -24,25 +22,19 @@ class ReadingStatus extends Model
         'is_favorite'
     ];
 
-    /**
-     * The attributes that should be cast.
-     */
+ 
     protected $casts = [
         'started_reading' => 'date',
         'finished_reading' => 'date',
         'is_favorite' => 'boolean',
     ];
 
-    /**
-     * Status constants
-     */
+  
     const STATUS_WANT_TO_READ = 'want_to_read';
     const STATUS_CURRENTLY_READING = 'currently_reading';
     const STATUS_FINISHED_READING = 'finished_reading';
 
-    /**
-     * Get all available statuses
-     */
+   
     public static function getStatuses(): array
     {
         return [
@@ -52,9 +44,7 @@ class ReadingStatus extends Model
         ];
     }
 
-    /**
-     * Relationships
-     */
+    
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -65,9 +55,6 @@ class ReadingStatus extends Model
         return $this->belongsTo(Book::class);
     }
 
-    /**
-     * Scopes
-     */
     public function scopeWantToRead($query)
     {
         return $query->where('status', self::STATUS_WANT_TO_READ);

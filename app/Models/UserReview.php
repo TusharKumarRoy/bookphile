@@ -20,25 +20,19 @@ class UserReview extends Model
         'likes_count' => 'integer',
     ];
 
-    /**
-     * Get the user that owns the review.
-     */
+    
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the book that was reviewed.
-     */
+  
     public function book(): BelongsTo
     {
         return $this->belongsTo(Book::class);
     }
 
-    /**
-     * Validation rules for review.
-     */
+    
     public static function rules(): array
     {
         return [
@@ -49,9 +43,7 @@ class UserReview extends Model
         ];
     }
 
-    /**
-     * Get truncated review text for previews.
-     */
+   
     public function getTruncatedReviewAttribute($length = 300): string
     {
         return strlen($this->review_text) > $length 
